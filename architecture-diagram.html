@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E-Shop — Interactive Architecture & Flow Explorer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    :root {
+      --bg-dark: #090d16;
+      --bg-surface: #0f172a;
+      --bg-surface-elevated: #1e293b;
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-accent: rgba(99, 102, 241, 0.35);
+      --accent-indigo: #6366f1;
+      --accent-cyan: #06b6d4;
+      --accent-emerald: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --glass-bg: rgba(15, 23, 42, 0.82);
+      --glass-border: rgba(255, 255, 255, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(circle at 15% 10%, rgba(99, 102, 241, 0.12) 0%, transparent 45%),
+        radial-gradient(circle at 85% 85%, rgba(6, 182, 212, 0.10) 0%, transparent 45%),
+        linear-gradient(to bottom, #090d16, #0c1322);
+    }
+
+    /* Header Bar */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      background: var(--glass-bg);
+      border-bottom: 1px solid var(--glass-border);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .logo-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .logo-icon {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(135deg, #4f46e5, #06b6d4);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: 1.25rem;
+      color: white;
+      box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+    }
+
+    .brand-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      background: linear-gradient(to right, #ffffff, #cbd5e1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-tag {
+      font-size: 0.75rem;
+      color: var(--accent-cyan);
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .badge-live {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: var(--accent-emerald);
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .badge-live::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: var(--accent-emerald);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--accent-emerald);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    /* Main Container */
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      max-width: 1600px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 1.5rem 2rem 3rem 2rem;
+      gap: 1.5rem;
+    }
+
+    /* Tab Navigation */
+    .tab-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      padding: 0.5rem;
+      border-radius: 16px;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 500;
+      padding: 0.65rem 1.15rem;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(6, 182, 212, 0.15));
+      border: 1px solid var(--border-accent);
+      color: #ffffff;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+    }
+
+    /* Diagram Canvas Container */
+    .canvas-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px;
+      padding: 1.5rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      min-height: 650px;
+    }
+
+    .canvas-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1.25rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border-subtle);
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .flow-info h2 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 0.35rem;
+    }
+
+    .flow-info p {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      max-width: 900px;
+      line-height: 1.5;
+    }
+
+    .canvas-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .ctrl-btn {
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      padding: 0.5rem 0.85rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-family: 'JetBrains Mono', monospace;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .ctrl-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Diagram Viewport */
+    .diagram-viewport {
+      flex: 1;
+      width: 100%;
+      overflow: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle, rgba(30, 41, 59, 0.4) 1px, transparent 1px);
+      background-size: 24px 24px;
+      border-radius: 12px;
+      padding: 2rem;
+      min-height: 520px;
+    }
+
+    .mermaid-wrapper {
+      transform-origin: center center;
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+
+    /* Key Architecture Highlights / Legend */
+    .highlights-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .hl-card {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 1.15rem;
+      transition: all 0.25s;
+    }
+
+    .hl-card:hover {
+      border-color: var(--border-accent);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    }
+
+    .hl-card .tag {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+      display: inline-block;
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+    }
+
+    .tag-cyan { background: rgba(6, 182, 212, 0.15); color: var(--accent-cyan); }
+    .tag-indigo { background: rgba(99, 102, 241, 0.15); color: var(--accent-indigo); }
+    .tag-emerald { background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald); }
+    .tag-amber { background: rgba(245, 158, 11, 0.15); color: var(--accent-amber); }
+
+    .hl-card h4 {
+      font-size: 0.95rem;
+      color: #ffffff;
+      margin-bottom: 0.3rem;
+    }
+
+    .hl-card p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-dim);
+      font-size: 0.8rem;
+      border-top: 1px solid var(--border-subtle);
+      margin-top: auto;
+    }
+
+    /* Modal for Raw Mermaid / Export */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 2rem;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-accent);
+      border-radius: 18px;
+      width: 100%;
+      max-width: 800px;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
+    }
+
+    .modal-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h3 {
+      font-size: 1.1rem;
+      color: #ffffff;
+    }
+
+    .modal-close {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    .modal-body {
+      padding: 1.5rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .code-area {
+      width: 100%;
+      height: 380px;
+      background: #050811;
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      color: #38bdf8;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      padding: 1rem;
+      resize: none;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="logo-badge">
+      <div class="logo-icon">E</div>
+      <div>
+        <div class="brand-title">E-Shop System Architecture</div>
+        <div class="brand-tag">Interactive Enterprise Flow & Topology Navigator</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <span class="badge-live">Next.js 15 + Gemini AI</span>
+      <button class="ctrl-btn" onclick="openRawModal()">📋 View Mermaid Code</button>
+      <button class="ctrl-btn" onclick="window.print()">🖨️ Print / Export PDF</button>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+    <!-- Tab Selector -->
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('system')">🌐 Global System Topology</button>
+      <button class="tab-btn" onclick="switchTab('ecommerce')">🛒 E-Commerce & Invoicing Flow</button>
+      <button class="tab-btn" onclick="switchTab('ai')">🤖 Sticky Glass AI Concierge</button>
+      <button class="tab-btn" onclick="switchTab('pincode')">📍 Pincode 560035 Delivery Engine</button>
+      <button class="tab-btn" onclick="switchTab('order-state')">📦 5-Step Order State Machine</button>
+      <button class="tab-btn" onclick="switchTab('auth')">🛡️ Multi-ID Auth & Avatars</button>
+      <button class="tab-btn" onclick="switchTab('notification')">🔔 Deal Alerts & Swipe-to-Dismiss</button>
+      <button class="tab-btn" onclick="switchTab('erd')">🗄️ Relational Database (ERD)</button>
+      <button class="tab-btn" onclick="switchTab('roadmap')">🚀 20-Phase Roadmap (P1–P20)</button>
+    </div>
+
+    <!-- Canvas Card -->
+    <div class="canvas-card">
+      <div class="canvas-header">
+        <div class="flow-info">
+          <h2 id="flow-title">Global System Topology</h2>
+          <p id="flow-desc">High-level architecture connecting Client tier (Auto-carousel, 3x4 AI grid, Web3 footer, Sticky AI), Edge Security, Next.js 15 Services, PostgreSQL 16, and External Clouds.</p>
+        </div>
+        <div class="canvas-controls">
+          <button class="ctrl-btn" onclick="zoomIn()">🔍+ Zoom In</button>
+          <button class="ctrl-btn" onclick="zoomOut()">🔍- Zoom Out</button>
+          <button class="ctrl-btn" onclick="resetZoom()">↺ Reset</button>
+        </div>
+      </div>
+
+      <!-- Viewport -->
+      <div class="diagram-viewport">
+        <div class="mermaid-wrapper" id="mermaid-container">
+          <div class="mermaid" id="diagram-mount">
+            <!-- Mermaid diagram will be dynamically injected here -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Key Architecture Highlights -->
+      <div class="highlights-grid" id="highlights-container">
+        <!-- Highlights will be dynamically updated based on active tab -->
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal for Raw Mermaid Code -->
+  <div class="modal-overlay" id="code-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modal-title">Mermaid Source Code</h3>
+        <button class="modal-close" onclick="closeRawModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <textarea class="code-area" id="modal-code" readonly></textarea>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    E-Shop Master Architectural Blueprint &bull; Unified Full-Stack Architecture &bull; Designed for Next.js 15, PostgreSQL 16, Prisma & Google Gemini API
+  </footer>
+
+  <script>
+    // Initialize Mermaid
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: 'dark',
+      securityLevel: 'loose',
+      fontFamily: 'Inter, sans-serif',
+      themeVariables: {
+        darkMode: true,
+        background: '#0f172a',
+        primaryColor: '#312e81',
+        primaryTextColor: '#f8fafc',
+        primaryBorderColor: '#6366f1',
+        lineColor: '#38bdf8',
+        secondaryColor: '#0e7490',
+        tertiaryColor: '#1e293b'
+      }
+    });
+
+    // Diagram Definitions
+    const diagrams = {
+      system: {
+        title: "Global System Topology & Architecture",
+        desc: "End-to-end multi-tier architecture connecting the Customer Browser, Edge Middleware, Next.js 15 Route Handlers, PostgreSQL, Prisma ORM, and External Cloud APIs.",
+        code: `flowchart TB
+    subgraph ClientTier ["🖥️ Client Tier (Browser)"]
+        Landing["Landing Page (Auto-Swipe Carousel, 3x4 AI Grid, Web3 Footer)"]
+        Catalog["Catalog & Left Sidebar Filters (Price Slider, Multi-Sort)"]
+        ProductDetail["Product Detail (6s Auto-Gallery, Reviews, Pincode 560035)"]
+        CartView["Cart Page (Top Address Selector, Promo Engine)"]
+        Account["Account Dashboard (5-Step Tracking, Random Avatar)"]
+        StickyAI["Sticky Glassmorphism AI Concierge (Bottom-Center)"]
+        AdminPortal["Protected Admin Portal (/admin)"]
+    end
+
+    subgraph EdgeTier ["🛡️ Edge & Middleware Tier"]
+        CDN["Edge CDN & SSL Termination"]
+        MW["Next.js Middleware (JWT Verification, RBAC, Rate Limiter)"]
+    end
+
+    subgraph AppTier ["⚙️ Application Layer (Next.js 15 Route Handlers)"]
+        AuthSvc["Auth & OTP Service"]
+        CatalogSvc["Catalog & 3x4 AI Recs Service"]
+        DeliverySvc["Pincode 560035 Distance Engine"]
+        CartSvc["Cart & Coupon Validator"]
+        OrderSvc["Order State Machine & PDF Invoicing"]
+        ReviewSvc["Verified Purchaser Review Gate"]
+        NotifySvc["Real-Time Notification SSE Stream"]
+        AISvc["Gemini 2.5 Flash Concierge Engine"]
+    end
+
+    subgraph DataTier ["💾 Persistence & External APIs"]
+        Postgres[(PostgreSQL 16 via Prisma)]
+        Redis[(Redis Cache & Rate Limiting)]
+        GeminiAPI["Google Gemini 2.5 Flash API"]
+        SMTP["Gmail SMTP / Nodemailer"]
+        S3["Cloud Storage (Images & Invoices)"]
+    end
+
+    ClientTier --> CDN
+    CDN --> MW
+    MW --> AppTier
+    AppTier --> Postgres
+    AppTier --> Redis
+    AISvc --> GeminiAPI
+    AuthSvc --> SMTP
+    OrderSvc --> S3`,
+        highlights: [
+          { tag: "tag-cyan", title: "Client Tier", desc: "Next.js 15 App Router with responsive layouts, 3D hover effects, and Web3 particle canvas footer." },
+          { tag: "tag-indigo", title: "Edge Security", desc: "Stateless JWT with HttpOnly cookies, RBAC role guard, and token-bucket rate limiting." },
+          { tag: "tag-emerald", title: "Persistence Tier", desc: "PostgreSQL 16 managed via Prisma ORM across 13 strongly-typed relational models." },
+          { tag: "tag-amber", title: "AI Integration", desc: "Google Gemini 2.5 Flash model providing catalog search tool calling and isolated user context." }
+        ]
+      },
+
+      ecommerce: {
+        title: "Customer E-Commerce Purchase & Invoicing Flow",
+        desc: "Complete purchasing sequence: Browsing, 3D card oversight, pincode delivery check, address selection, coupon application, payment, and instant PDF invoice generation.",
+        code: `sequenceDiagram
+    autonumber
+    actor Customer as Customer
+    participant UI as Next.js 15 Client UI
+    participant Catalog as /api/products
+    participant Pincode as /api/pincode/estimate
+    participant Cart as /api/cart
+    participant Coupon as /api/coupons/validate
+    participant Checkout as /api/orders/checkout
+    participant Invoice as /api/orders/[id]/invoice
+    participant DB as PostgreSQL (Prisma)
+
+    Customer->>UI: Browses Catalog with 3D Hover & Inline (+/-)
+    Customer->>UI: Opens Product Detail View in New Tab
+    UI->>Pincode: POST /api/pincode/estimate (560035)
+    Pincode-->>UI: ETA: "Tomorrow by 9:00 PM", Shipping: ₹0
+    Customer->>UI: Clicks "Add to Cart"
+    UI->>Cart: POST /api/cart/add (productId, qty: 1)
+    Cart->>DB: Upsert CartItem
+    DB-->>Cart: Updated
+    Cart-->>UI: Navbar Cart counter badge animates live
+
+    Customer->>UI: Navigates to /cart
+    UI->>UI: Displays saved addresses at top of cart
+    Customer->>UI: Enters Coupon Code "SAVE20"
+    UI->>Coupon: POST /api/coupons/validate
+    Coupon->>DB: Verify code & expiry
+    DB-->>Coupon: Valid (20% Discount)
+    Coupon-->>UI: Updates Cart Subtotal with -20%
+
+    Customer->>UI: Completes Checkout & Payment (UPI/Card/COD)
+    UI->>Checkout: POST /api/orders/checkout
+    Checkout->>DB: Atomic Transaction [Decrement Stock, Create Order, Clear Cart]
+    DB-->>Checkout: Order Created (INV-20261001-08142)
+    Checkout-->>UI: Confirmation screen displayed
+    UI->>Invoice: GET /api/orders/{id}/invoice
+    Invoice->>DB: Load Order + Items + User + Address
+    Invoice-->>UI: Streams downloadable PDF file
+    Customer->>Customer: Downloads official Vector PDF Invoice`,
+        highlights: [
+          { tag: "tag-cyan", title: "Live Cart Sync", desc: "Zustand store synchronizes cart counts instantly across navbar badges and persisted database rows." },
+          { tag: "tag-indigo", title: "Atomic Transaction", desc: "Checkout wraps inventory decrement, coupon usage, and order creation in a single ACID transaction." },
+          { tag: "tag-emerald", title: "Automated Invoicing", desc: "Generates tamper-proof PDF with unique invoice number, tax breakdown, and company signature." },
+          { tag: "tag-amber", title: "Address-First Cart", desc: "Saved shipping address selection rendered prominently above the cart item list." }
+        ]
+      },
+
+      ai: {
+        title: "Sticky Glassmorphism AI Shopping Concierge Flow",
+        desc: "Floating bottom-center frosted glass bar powered by Google Gemini 2.5 Flash, executing catalog search tool calling with isolated per-user conversation memory.",
+        code: `sequenceDiagram
+    autonumber
+    actor Customer as Customer
+    participant GlassBar as Sticky Glass Bar (Bottom-Center)
+    participant AISvc as /api/ai/chat
+    participant DB as PostgreSQL (Prisma)
+    participant Gemini as Google Gemini 2.5 Flash API
+
+    Customer->>GlassBar: Types: "I need running shoes under ₹3,500 with good cushion"
+    GlassBar->>AISvc: POST /api/ai/chat (userId, message, sessionId)
+    AISvc->>DB: Load last 10 messages from AIChatSession
+    DB-->>AISvc: Returns user context history
+
+    AISvc->>Gemini: Stream Chat + Tools: [searchCatalog(query, maxPrice)]
+    Note over Gemini: Intent analyzed: matches Running Shoes under 3500
+    Gemini-->>AISvc: Tool Call: searchCatalog(query="running shoes", maxPrice=3500)
+
+    AISvc->>DB: SELECT * FROM Product WHERE category='Fashion' AND discountedPrice <= 3500
+    DB-->>AISvc: Returns 2 matched products
+    AISvc->>Gemini: Return Tool Output: JSON of matched items
+
+    Note over Gemini: Formulates conversational shopping guidance
+    Gemini-->>AISvc: Returns natural text + referenced product IDs
+    AISvc->>DB: Record User & Assistant turns in AIChatMessage
+    AISvc-->>GlassBar: Return { reply, recommendedProducts: [Card1, Card2] }
+
+    GlassBar->>GlassBar: Render message stream with interactive Product Cards
+    Customer->>GlassBar: Clicks Product Card -> Navigates straight to Product Details!`,
+        highlights: [
+          { tag: "tag-cyan", title: "Glassmorphism UI", desc: "backdrop-filter: blur(16px) with fixed bottom-center viewport pinning that stays on scroll." },
+          { tag: "tag-indigo", title: "Gemini Tool Calling", desc: "Strict schema tool calling pulls real-time inventory from PostgreSQL without hallucinations." },
+          { tag: "tag-emerald", title: "Isolated Memory", desc: "Chat history mapped strictly to authenticated userId, preserving context across sessions." },
+          { tag: "tag-amber", title: "Clickable Cards", desc: "Direct interactive cards embedded in chat stream for immediate 1-click purchase navigation." }
+        ]
+      },
+
+      pincode: {
+        title: "Smart Pincode Delivery Estimator Flow (Default 560035)",
+        desc: "Indian postal code delivery calculation benchmarked to default 560035 Bengaluru, measuring distance from central hub 560001 to compute exact arrival times.",
+        code: `flowchart TD
+    Input["Customer Enters Pincode<br/>(Default: 560035)"] --> Validate{"Valid 6-Digit<br/>Indian Postal Code?"}
+    Validate -- "No" --> Err["Display: 'Invalid PIN code format'"]
+    
+    Validate -- "Yes" --> Cache{"Pincode Cached<br/>in Redis?"}
+    Cache -- "Yes" --> FetchCache["Get Distance from Redis Memory"]
+    Cache -- "No" --> Calc["Compute Haversine Distance from Central Hub (560001 - Bengaluru Central)"]
+    Calc --> StoreCache["Save (Pincode -> Distance) to Redis (TTL 30 days)"]
+    StoreCache --> Classify
+    FetchCache --> Classify{"Distance Zone"}
+
+    Classify -- "< 30 km (Intra-City / Same City)" --> Zone1["Same-City Superfast<br/>• Transit: Same Day / Next Day<br/>• ETA: Tomorrow by 9:00 PM<br/>• Delivery: FREE<br/>• COD: Available"]
+    Classify -- "30 - 300 km (Regional Hub)" --> Zone2["Regional Hub Delivery<br/>• Transit: 2 Business Days<br/>• Delivery: FREE over ₹499 (else ₹40)<br/>• COD: Available"]
+    Classify -- "> 300 km (National Express)" --> Zone3["National Express Shipping<br/>• Transit: 4 to 6 Business Days<br/>• Delivery: Standard ₹70<br/>• COD: Available"]
+
+    Zone1 --> OutputJSON["Return { estimatedDays, deliveryFormatted, shippingFee, isCodAvailable }"]
+    Zone2 --> OutputJSON
+    Zone3 --> OutputJSON
+    OutputJSON --> RenderUI["Update Delivery Timeline Badge & Cart Fee Instantly"]`,
+        highlights: [
+          { tag: "tag-cyan", title: "Default 560035", desc: "Bengaluru Sarjapur/Karmelaram zone pre-selected for instant zero-click shipping estimates." },
+          { tag: "tag-indigo", title: "Distance Matrix", desc: "Measures distance from central logistics warehouse hub (560001) using coordinate math." },
+          { tag: "tag-emerald", title: "Redis Caching", desc: "Cached distance computations ensure sub-10ms response times on pincode queries." },
+          { tag: "tag-amber", title: "Dynamic Policies", desc: "Automatically updates free shipping eligibility and Cash on Delivery (COD) flags." }
+        ]
+      },
+
+      'order-state': {
+        title: "5-Step Order State Machine & Conditional Modification Gate",
+        desc: "Deterministic 5-stage order progression enforcing business rules: cancellations and shipping address changes are permitted only prior to 'Out for Delivery'.",
+        code: `stateDiagram-v2
+    [*] --> ORDER_PLACED: Customer places order
+    
+    state "Customer Can Modify Address & Cancel" as OpenState {
+        ORDER_PLACED --> CONFIRMED: Admin clicks 'Accept'
+        CONFIRMED --> SHIPPED: Dispatched from Warehouse
+    }
+
+    state "Locked State (Address Changes & Cancellations Disabled)" as LockedState {
+        SHIPPED --> OUT_FOR_DELIVERY: Local Courier scans package
+        OUT_FOR_DELIVERY --> DELIVERED: Reaches Customer Doorstep
+    }
+
+    ORDER_PLACED --> CANCELLED: Customer / Admin clicks 'Cancel'
+    CONFIRMED --> CANCELLED: Customer / Admin clicks 'Cancel'
+    SHIPPED --> CANCELLED: Customer / Admin clicks 'Cancel'
+
+    OUT_FOR_DELIVERY --> [*]: Cancellation Blocked (HTTP 409)
+    DELIVERED --> [*]: Verified Buyer Status Granted (Unlocks Reviews)
+    CANCELLED --> [*]: Inventory Restocked & Refund Triggered`,
+        highlights: [
+          { tag: "tag-cyan", title: "5-Step Progression", desc: "Order Placed -> Confirmed -> Shipped -> Out for Delivery -> Delivered." },
+          { tag: "tag-rose", title: "Out-for-Delivery Gate", desc: "Address alteration and cancellation buttons automatically disable once status transitions." },
+          { tag: "tag-emerald", title: "Review Unlock", desc: "Only orders reaching final DELIVERED state confer verified purchaser review privileges." },
+          { tag: "tag-amber", title: "Automatic Restock", desc: "Cancellations execute atomic rollback, returning allocated quantities back to available stock." }
+        ]
+      },
+
+      auth: {
+        title: "Multi-Identifier Authentication, OTP & Random Avatar Flow",
+        desc: "Unified authentication accepting Email, Phone, or Username. Supports Gmail OTP and password login, with live password entropy meter and random avatar allocation.",
+        code: `flowchart TD
+    User["User Accesses Auth Portal"] --> Mode{"Action"}
+
+    subgraph RegisterFlow ["Registration & Avatar Allocation"]
+        Mode -- "Register" --> Form["Inputs: Name, Username, Email, Phone, Password, Confirm"]
+        Form --> LiveMeter["Live Password Strength Meter evaluates length, uppercase, numbers, symbols"]
+        LiveMeter --> AvatarAssign["Randomly Assign 1 of 10 Vibrant Avatar Vectors"]
+        AvatarAssign --> DispatchOTP["Generate 6-digit OTP & Dispatch via Gmail SMTP"]
+        DispatchOTP --> VerifySignup{"User inputs OTP within 10 mins?"}
+        VerifySignup -- "Yes" --> SaveUser["Create User in PostgreSQL with isEmailVerified=true"]
+        SaveUser --> GoLogin["Redirect directly to /login with success notification"]
+    end
+
+    subgraph LoginFlow ["Multi-Identifier Login"]
+        Mode -- "Login" --> InputID["Input Identifier: Email ID, Phone Number, OR Username"]
+        InputID --> AuthChoice{"Authentication Method"}
+        AuthChoice -- "Password" --> Pwd["Enter Password (Toggle SVG Eye Button to show/hide)"]
+        Pwd --> Bcrypt["Bcrypt verify against passwordHash"]
+        AuthChoice -- "OTP" --> LoginOTP["Send 6-digit OTP to Email/Phone"]
+        LoginOTP --> EnterOTP["Verify OTP input"]
+
+        Bcrypt -- "Valid" --> IssueJWT["Issue Signed JWT in HttpOnly Secure Cookie"]
+        EnterOTP -- "Valid" --> IssueJWT
+        IssueJWT --> AppHome["Navbar displays Allocated Random Avatar & Live Wishlist/Cart"]
+    end`,
+        highlights: [
+          { tag: "tag-cyan", title: "Triple Identifier", desc: "Users can sign in seamlessly using Email ID, Phone Number, or Unique Username." },
+          { tag: "tag-indigo", title: "Gmail OTP Service", desc: "Cryptographic 6-digit OTP dispatched via Gmail SMTP with 10-minute expiry." },
+          { tag: "tag-emerald", title: "Live Strength Meter", desc: "Real-time client-side entropy bar evaluating character diversity before submission." },
+          { tag: "tag-amber", title: "10 Random Avatars", desc: "Each account receives one of 10 stylized avatars assigned permanently to user profile." }
+        ]
+      },
+
+      notification: {
+        title: "Broadcast Deal Alerts & Swipe-to-Dismiss Gesture Flow",
+        desc: "Admin publishes deal announcements pushed in real-time via Server-Sent Events (SSE). Customers view them in a slide-over drawer and dismiss via right-swipe.",
+        code: `sequenceDiagram
+    autonumber
+    actor Admin as Store Admin
+    participant AdminUI as Admin Notification Center
+    participant SSE as SSE Event Stream (/api/notifications/stream)
+    actor Customer as Customer Client
+    participant Drawer as Notification Drawer (Swipeable)
+    participant DB as PostgreSQL (Prisma)
+
+    Customer->>SSE: Open persistent SSE connection
+    SSE-->>Customer: Connection confirmed (keep-alive)
+
+    Admin->>AdminUI: Enters Title: "Weekend Deal: 40% Off Laptops!"
+    Admin->>AdminUI: Clicks "Broadcast Deal to All Users"
+    AdminUI->>DB: INSERT INTO Notification
+    DB-->>AdminUI: Record created (notif_543)
+    AdminUI->>SSE: Push 'deal-alert' event with payload
+
+    SSE-->>Customer: Stream 'deal-alert' payload
+    Customer->>Customer: Bell badge increments & slide-in toast displays
+
+    Customer->>Drawer: Opens Notification Drawer
+    Customer->>Drawer: Drags notification card to the RIGHT (> 120px)
+    Drawer->>Drawer: Card plays exit fade animation & collapses
+    Drawer->>DB: POST /api/notifications/dismiss (notif_543)
+    DB-->>Drawer: Marked dismissed in UserNotification table`,
+        highlights: [
+          { tag: "tag-cyan", title: "SSE Push Stream", desc: "Lightweight, persistent Server-Sent Events delivering instant deal notifications." },
+          { tag: "tag-rose", title: "Swipe-to-Dismiss", desc: "Touch/mouse drag gesture tracking rightward swipe to delete notifications smoothly." },
+          { tag: "tag-emerald", title: "Persistent Dismissal", desc: "Dismissed state synchronized to UserNotification table so alerts stay hidden." },
+          { tag: "tag-amber", title: "Admin Deal Broadcast", desc: "1-click admin interface for sending marketing announcements with target URLs." }
+        ]
+      },
+
+      erd: {
+        title: "Relational Database Schema & Entity Relationships",
+        desc: "PostgreSQL 16 relational data architecture managed via Prisma ORM, comprising 13 models with strict integrity constraints and foreign keys.",
+        code: `erDiagram
+    User ||--o{ Order : "places"
+    User ||--o{ Review : "writes"
+    User ||--o{ Address : "saves"
+    User ||--o{ CartItem : "holds"
+    User ||--o{ WishlistItem : "saves"
+    User ||--o{ AIChatSession : "owns"
+    User ||--o{ UserNotification : "receives"
+
+    Category ||--o{ Product : "categorizes"
+    Product ||--o{ ProductImage : "contains"
+    Product ||--o{ Review : "receives"
+    Product ||--o{ OrderItem : "includes"
+    Product ||--o{ CartItem : "referenced_in"
+    Product ||--o{ WishlistItem : "referenced_in"
+
+    Order ||--|{ OrderItem : "contains"
+    Order ||--|| Address : "ships_to"
+    Order ||--o| Coupon : "discounts"
+
+    Coupon ||--o{ Order : "applied_to"
+    Notification ||--o{ UserNotification : "broadcasts"
+    AIChatSession ||--|{ AIChatMessage : "contains"
+
+    User {
+        string id PK
+        string username UK
+        string email UK
+        string phone UK
+        string passwordHash
+        string role "CUSTOMER | ADMIN"
+        string avatarUrl
+    }
+
+    Product {
+        string id PK
+        string title
+        string slug UK
+        decimal originalPrice
+        decimal discountedPrice
+        int discountPercent
+        int stockQuantity
+        float ratingAverage
+    }
+
+    Order {
+        string id PK
+        string invoiceNumber UK
+        string userId FK
+        decimal totalAmount
+        string orderStatus "5-step state"
+    }
+
+    Review {
+        string id PK
+        string productId FK
+        string userId FK
+        int rating
+        boolean isVerifiedPurchase
+    }
+
+    Coupon {
+        string id PK
+        string code UK
+        int discountPercentage
+        datetime expiresAt
+    }`,
+        highlights: [
+          { tag: "tag-cyan", title: "ACID Relational Core", desc: "PostgreSQL 16 ensures transactional integrity for stock, payments, and orders." },
+          { tag: "tag-indigo", title: "Cascade Deletion", desc: "Product images and order items configured with safe cascading and audit preservation." },
+          { tag: "tag-emerald", title: "Verified Reviews Gate", desc: "Review table enforces unique constraint and foreign key link to verified purchasers." },
+          { tag: "tag-amber", title: "Chat Isolation", desc: "AIChatSession and AIChatMessage isolate conversational memory strictly per userId." }
+        ]
+      },
+
+      roadmap: {
+        title: "20-Phase Phased Implementation Roadmap (P1 to P20)",
+        desc: "Full incremental execution order as defined in EShop_Project_Planning_Document.md: from Project Scaffolding & DB Models through Auth, Cart, Checkout, Invoices, Admin, and AI Assistant.",
+        code: `flowchart TD
+    subgraph Foundation ["Phase 1 - 5: Core & Authentication"]
+        P1["P1: Setup, Linting, & Repo Structure"] --> P2["P2: Database Models & Seeds (Mongo/Postgres)"]
+        P2 --> P3["P3: Auth Backend (JWT, OTP, Refresh Token)"]
+        P3 --> P4["P4: Auth Frontend (Live Strength Meter & Avatars)"]
+        P4 --> P5["P5: Admin Auth & RBAC Route Guard"]
+    end
+
+    subgraph Storefront ["Phase 6 - 10: Browsing & Discovery"]
+        P5 --> P6["P6: Home Page (Carousel, Categories, Web3 Footer)"]
+        P6 --> P7["P7: Catalogue Listing & Left Filter Sidebar"]
+        P7 --> P8["P8: Product Detail Page & 6s Auto-Slide Gallery"]
+        P8 --> P9["P9: Pincode 560035 Delivery Calculator"]
+        P9 --> P10["P10: Cart & Wishlist with Live Counter Badge"]
+    end
+
+    subgraph CommerceOrder ["Phase 11 - 15: Checkout, Invoicing & Admin"]
+        P10 --> P11["P11: Coupons & Checkout (Razorpay Test Mode)"]
+        P11 --> P12["P12: Invoices (Sequential ESH-YYYY-000001 & PDF)"]
+        P12 --> P13["P13: Orders, Tracking (5 Steps) & Account Management"]
+        P13 --> P14["P14: Admin Backend (10/Page, Stock, Coupons, CSV/PDF Export)"]
+        P14 --> P15["P15: Admin Frontend UI (Persistent Left Sidebar)"]
+    end
+
+    subgraph AdvancedShip ["Phase 16 - 20: Real-Time, AI & Production"]
+        P15 --> P16["P16: Real-Time Notifications (Swipe-to-Dismiss) & Verified Reviews"]
+        P16 --> P17["P17: Grounded AI Search & 12-Item Recommendations"]
+        P17 --> P18["P18: AI Chat Concierge & Sticky Glassmorphism Bar"]
+        P18 --> P19["P19: Hardening, WCAG 2.1 AA & Performance Tuning"]
+        P19 --> P20["P20: CI/CD, Docs, Production Deployment & Health Checks"]
+    end`,
+        highlights: [
+          { tag: "tag-cyan", title: "Phased Execution", desc: "20 self-contained incremental phases (P1–P20) ready for AI coding IDE handoff." },
+          { tag: "tag-indigo", title: "Grounded AI Chat", desc: "P17–P18 implement Gemini/Claude catalog tool calling without hallucinations." },
+          { tag: "tag-emerald", title: "Real-Time & Reviews", desc: "P16 implements live deal push, swipe-to-dismiss gesture, and verified buyer reviews." },
+          { tag: "tag-amber", title: "Full Admin Tooling", desc: "P14–P15 build 10-per-page order fulfillment, stock alerts, and 1-click export." }
+        ]
+      }
+    };
+
+    let currentZoom = 1.0;
+    let activeTabKey = 'system';
+
+    // Switch Tab Function
+    async function switchTab(key) {
+      if (!diagrams[key]) return;
+      activeTabKey = key;
+
+      // Update button styles
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.getAttribute('onclick').includes(key));
+      if (activeBtn) activeBtn.classList.add('active');
+
+      // Update Titles & Descriptions
+      document.getElementById('flow-title').textContent = diagrams[key].title;
+      document.getElementById('flow-desc').textContent = diagrams[key].desc;
+
+      // Render Highlights
+      const hlContainer = document.getElementById('highlights-container');
+      hlContainer.innerHTML = '';
+      diagrams[key].highlights.forEach(h => {
+        const div = document.createElement('div');
+        div.className = 'hl-card';
+        div.innerHTML = `
+          <span class="tag ${h.tag}">${h.title}</span>
+          <h4>${h.title}</h4>
+          <p>${h.desc}</p>
+        `;
+        hlContainer.appendChild(div);
+      });
+
+      // Render Diagram
+      const mount = document.getElementById('diagram-mount');
+      mount.innerHTML = '';
+      mount.removeAttribute('data-processed');
+
+      try {
+        const { svg } = await mermaid.render('mermaid-svg-' + Date.now(), diagrams[key].code);
+        mount.innerHTML = svg;
+      } catch (err) {
+        console.error("Mermaid render error:", err);
+        mount.innerHTML = '<div style="color: #ef4444; padding: 2rem;">Error rendering diagram: ' + err.message + '</div>';
+      }
+
+      resetZoom();
+    }
+
+    // Zoom Controls
+    function zoomIn() {
+      currentZoom = Math.min(currentZoom + 0.15, 2.5);
+      applyZoom();
+    }
+
+    function zoomOut() {
+      currentZoom = Math.max(currentZoom - 0.15, 0.5);
+      applyZoom();
+    }
+
+    function resetZoom() {
+      currentZoom = 1.0;
+      applyZoom();
+    }
+
+    function applyZoom() {
+      const container = document.getElementById('mermaid-container');
+      container.style.transform = `scale(${currentZoom})`;
+    }
+
+    // Modal Controls
+    function openRawModal() {
+      document.getElementById('modal-title').textContent = diagrams[activeTabKey].title + " — Mermaid Source";
+      document.getElementById('modal-code').value = diagrams[activeTabKey].code;
+      document.getElementById('code-modal').classList.add('active');
+    }
+
+    function closeRawModal() {
+      document.getElementById('code-modal').classList.remove('active');
+    }
+
+    // Initial Load
+    window.addEventListener('DOMContentLoaded', () => {
+      switchTab('system');
+    });
+  </script>
+</body>
+</html>

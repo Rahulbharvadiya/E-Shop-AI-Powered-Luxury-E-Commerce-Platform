@@ -1,0 +1,328 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* User Theme Colors */
+  --color-dark: #0D0606;
+  --color-light: #F8F6F6;
+  --color-accent: #FF9E00;
+
+  /* Surfaces & Layers */
+  --bg-primary: #0D0606;
+  --bg-surface: #140B0B;
+  --bg-surface-elevated: #1B1010;
+  --bg-card: #160D0D;
+  --bg-card-hover: #201313;
+  --bg-glass: rgba(13, 6, 6, 0.88);
+
+  /* Typography Colors */
+  --text-primary: #F8F6F6;
+  --text-muted: #B8B0B0;
+  --text-dim: #786E6E;
+
+  /* Accents & Glows */
+  --accent-hover: #FFAE26;
+  --accent-dark: #D98500;
+  --accent-glow: rgba(255, 158, 0, 0.35);
+  --accent-subtle: rgba(255, 158, 0, 0.12);
+
+  /* Borders */
+  --border-subtle: rgba(248, 246, 246, 0.08);
+  --border-card: rgba(248, 246, 246, 0.12);
+  --border-accent: rgba(255, 158, 0, 0.4);
+
+  /* Fonts */
+  --font-giliran: 'Giliran', 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+  --font-poppins: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Radii */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-poppins);
+  min-height: 100vh;
+  overflow-x: hidden;
+  line-height: 1.5;
+  background-image: 
+    radial-gradient(circle at 15% 10%, rgba(255, 158, 0, 0.04) 0%, transparent 45%),
+    radial-gradient(circle at 85% 85%, rgba(255, 158, 0, 0.03) 0%, transparent 45%),
+    linear-gradient(to bottom, #0D0606, #120909);
+  background-attachment: fixed;
+}
+
+/* Typography Classes */
+h1, h2, h3, h4, .font-giliran, .font-heading {
+  font-family: var(--font-giliran);
+  letter-spacing: -0.015em;
+  font-weight: 700;
+}
+
+.font-poppins, .font-body {
+  font-family: var(--font-poppins);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* Custom Luxury Scrollbar */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+::-webkit-scrollbar-track {
+  background: #0D0606;
+}
+::-webkit-scrollbar-thumb {
+  background: #2B1C1C;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-accent);
+}
+
+/* Glass Panels */
+.glass-panel {
+  background: var(--bg-glass);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid var(--border-subtle);
+}
+
+.glass-dropdown {
+  background: rgba(18, 10, 10, 0.96);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--border-card);
+}
+
+/* 3D Luxury Pop-Up Card */
+.card-3d {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s, border-color 0.28s;
+  position: relative;
+  overflow: hidden;
+}
+
+.card-3d:hover {
+  transform: translateY(-6px);
+  border-color: rgba(255, 158, 0, 0.4);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.75), 0 0 25px rgba(255, 158, 0, 0.18);
+}
+
+/* Theme Buttons */
+.btn-primary, .btn-theme-primary {
+  background: var(--color-accent);
+  color: #0D0606;
+  border: none;
+  font-family: var(--font-poppins);
+  font-weight: 700;
+  padding: 0.65rem 1.4rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.22s ease-in-out;
+  box-shadow: 0 4px 18px rgba(255, 158, 0, 0.3);
+}
+
+.btn-primary:hover, .btn-theme-primary:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px rgba(255, 158, 0, 0.45);
+}
+
+.btn-secondary, .btn-theme-secondary {
+  background: var(--bg-surface-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--border-card);
+  font-family: var(--font-poppins);
+  font-weight: 600;
+  padding: 0.65rem 1.4rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-secondary:hover, .btn-theme-secondary:hover {
+  background: #251616;
+  border-color: rgba(248, 246, 246, 0.25);
+  color: #FFFFFF;
+}
+
+/* Badges */
+.badge-discount, .badge-theme-accent {
+  background: var(--color-accent);
+  color: #0D0606;
+  font-size: 0.7rem;
+  font-family: var(--font-poppins);
+  font-weight: 800;
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  box-shadow: 0 2px 8px rgba(255, 158, 0, 0.35);
+}
+
+.badge-ai {
+  background: rgba(255, 158, 0, 0.12);
+  border: 1px solid rgba(255, 158, 0, 0.35);
+  color: var(--color-accent);
+  font-size: 0.72rem;
+  font-family: var(--font-poppins);
+  font-weight: 700;
+  padding: 0.25rem 0.7rem;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* Pulsating Animation for Mega Discount Button */
+@keyframes pulse-amber {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(255, 158, 0, 0.4), 0 0 30px rgba(255, 158, 0, 0.2);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(255, 158, 0, 0.7), 0 0 50px rgba(255, 158, 0, 0.35);
+    transform: scale(1.02);
+  }
+}
+
+.btn-pulsate-discount {
+  background: linear-gradient(135deg, #FF9E00, #E68500);
+  color: #0D0606;
+  border: none;
+  font-family: var(--font-poppins);
+  font-weight: 800;
+  animation: pulse-amber 2.2s infinite ease-in-out;
+}
+
+/* Shimmer Loading Skeleton */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #140B0B 25%, #221414 50%, #140B0B 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.8s infinite;
+  border-radius: var(--radius-md);
+}
+
+/* Dropdown Animation */
+@keyframes slideDownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-down {
+  animation: slideDownFade 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.2s ease-out forwards;
+}
+
+@keyframes slideLeft {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-left {
+  animation: slideLeft 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes scaleUp {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 10px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+.animate-scale-up {
+  animation: scaleUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Inputs & Form Elements */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"],
+input[type="number"],
+textarea,
+select {
+  font-family: var(--font-poppins);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--color-accent) !important;
+  box-shadow: 0 0 0 1px var(--color-accent);
+}
+
+/* Range input slider styling */
+input[type="range"] {
+  accent-color: var(--color-accent);
+}
