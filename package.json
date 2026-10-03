@@ -4,7 +4,7 @@
   "description": "E-Shop Full-Stack E-Commerce Application",
   "scripts": {
     "install:server": "cd server && npm install",
-    "install:client": "cd client && npm install",
+    "install:client": "cd client && npm install --include=dev",
     "install:all": "npm run install:server && npm run install:client",
     "build": "npm run install:all && cd client && npm run build",
     "seed": "cd server && npm run seed",
