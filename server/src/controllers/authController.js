@@ -33,6 +33,84 @@ function generateToken(user) {
   );
 }
 
+// Direct Proper Registration
+export async function register(req, res) {
+  try {
+    const { name, username, email, phone, password, avatar } = req.body;
+
+    if (!name || !username || !email || !phone || !password) {
+      return res.status(400).json({ success: false, message: 'All fields are required.' });
+    }
+
+    const cleanUsername = username.trim().toLowerCase();
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanPhone = phone.trim();
+
+    if (password.length < 8) {
+      return res.status(400).json({ success: false, message: 'Password must be at least 8 characters long.' });
+    }
+
+    // Check existing
+    const existing = await User.findOne({
+      $or: [{ email: cleanEmail }, { username: cleanUsername }, { phone: cleanPhone }]
+    });
+
+    if (existing) {
+      let field = 'Email';
+      if (existing.username === cleanUsername) field = 'Username';
+      if (existing.phone === cleanPhone) field = 'Phone Number';
+      return res.status(409).json({ success: false, message: `${field} is already registered.` });
+    }
+
+    // Hash password
+    const salt = await bcrypt.genSalt(10);
+    const passwordHash = await bcrypt.hash(password, salt);
+
+    // Create user
+    const allocatedAvatar = avatar || getRandomAvatar();
+    const user = await User.create({
+      name: name.trim(),
+      username: cleanUsername,
+      email: cleanEmail,
+      phone: cleanPhone,
+      passwordHash,
+      role: 'customer',
+      avatar: allocatedAvatar,
+      emailVerified: true,
+      status: 'active'
+    });
+
+    const token = generateToken(user);
+
+    // Set cookie
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: 'Registration successful! Welcome to E-Shop.',
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        username: user.username,
+        email: user.email,
+        phone: user.phone,
+        role: user.role,
+        avatar: user.avatar,
+        addresses: user.addresses || [],
+        defaultPincode: user.defaultPincode
+      }
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+}
+
 // 1. Register: Request OTP
 export async function registerRequest(req, res) {
   try {

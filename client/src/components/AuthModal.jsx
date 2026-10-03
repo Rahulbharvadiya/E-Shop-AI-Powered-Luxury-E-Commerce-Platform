@@ -40,8 +40,6 @@ export default function AuthModal() {
   const [regPassword, setRegPassword] = useState('');
   const [regConfirmPassword, setRegConfirmPassword] = useState('');
   const [showRegPassword, setShowRegPassword] = useState(false);
-  const [regOtp, setRegOtp] = useState('');
-  const [isRegOtpStep, setIsRegOtpStep] = useState(false);
   const [randomAvatar, setRandomAvatar] = useState(AVATAR_PRESETS[0]);
 
   // Forgot Password Form
@@ -138,29 +136,7 @@ export default function AuthModal() {
     }
   };
 
-  const handleQuickLogin = async (id, pwd) => {
-    setIdentifier(id);
-    setPassword(pwd);
-    setLoading(true);
-    setError('');
-    try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ identifier: id, password: pwd })
-      });
-      const data = await res.json();
-      if (!data.success) throw new Error(data.message || 'Login failed');
-      setAuth(data.user, data.token);
-      closeAuthModal();
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // 2. Handle Register
+  // 2. Handle Register (Direct Proper Registration)
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -171,42 +147,31 @@ export default function AuthModal() {
       return;
     }
 
+    if (regPassword.length < 8) {
+      setError('Password must be at least 8 characters long.');
+      return;
+    }
+
     setLoading(true);
 
     try {
-      if (!isRegOtpStep) {
-        const res = await fetch('/api/auth/register/request-otp', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            name: regName,
-            username: regUsername,
-            email: regEmail,
-            phone: regPhone,
-            password: regPassword
-          })
-        });
-        const data = await res.json();
-        if (!data.success) throw new Error(data.message || 'Registration request failed');
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: regName,
+          username: regUsername,
+          email: regEmail,
+          phone: regPhone,
+          password: regPassword,
+          avatar: randomAvatar
+        })
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message || 'Registration failed');
 
-        setIsRegOtpStep(true);
-        setSuccessMsg(data.message);
-      } else {
-        const res = await fetch('/api/auth/register/verify-otp', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email: regEmail,
-            otp: regOtp,
-            avatar: randomAvatar
-          })
-        });
-        const data = await res.json();
-        if (!data.success) throw new Error(data.message || 'OTP Verification failed');
-
-        setAuth(data.user, data.token);
-        closeAuthModal();
-      }
+      setAuth(data.user, data.token);
+      closeAuthModal();
     } catch (err) {
       setError(err.message);
     } finally {
@@ -337,7 +302,7 @@ export default function AuthModal() {
                     required
                     value={identifier}
                     onChange={(e) => setIdentifier(e.target.value)}
-                    placeholder="customer@eshop.com or 9876543211"
+                    placeholder="Enter your email, username, or phone"
                     className="w-full bg-[#160D0D] border border-[#F8F6F6]/10 rounded-xl px-3.5 py-2.5 text-xs text-[#F8F6F6] focus:outline-none focus:border-[#FF9E00]"
                   />
                 </div>
@@ -400,32 +365,7 @@ export default function AuthModal() {
               </button>
             </form>
 
-            {/* Quick 1-Click Demo Logins */}
-            <div className="mt-4 pt-3 border-t border-[#F8F6F6]/10 space-y-2">
-              <span className="text-[10px] font-bold text-[#786E6E] uppercase tracking-wider block text-center">
-                ⚡ 1-Click Fast Demo Logins
-              </span>
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={() => handleQuickLogin('admin@eshop.com', 'AdminPassword@123')}
-                  className="p-2 rounded-xl bg-[#221414] hover:bg-[#FF9E00] hover:text-[#0D0606] border border-[#FF9E00]/40 text-[#FF9E00] text-xs font-bold transition-all text-center flex flex-col items-center justify-center cursor-pointer shadow-md group"
-                >
-                  <span className="font-mono text-[11px] group-hover:text-[#0D0606]">🛡️ Store Admin</span>
-                  <span className="text-[9px] text-[#B8B0B0] group-hover:text-[#0D0606]/80 font-normal">Full Ops Console</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleQuickLogin('customer@eshop.com', 'Customer@123')}
-                  className="p-2 rounded-xl bg-[#1A1010] hover:bg-[#F8F6F6] hover:text-[#0D0606] border border-[#F8F6F6]/10 text-[#F8F6F6] text-xs font-bold transition-all text-center flex flex-col items-center justify-center cursor-pointer shadow-md group"
-                >
-                  <span className="font-mono text-[11px] group-hover:text-[#0D0606]">👤 Customer</span>
-                  <span className="text-[9px] text-[#786E6E] group-hover:text-[#0D0606]/80 font-normal">Retail Shopping</span>
-                </button>
-              </div>
-            </div>
-
-            <div className="mt-4 pt-3 border-t border-[#F8F6F6]/10 text-center text-xs text-[#786E6E]">
+            <div className="mt-5 pt-4 border-t border-[#F8F6F6]/10 text-center text-xs text-[#786E6E]">
               New to E-Shop?{' '}
               <button
                 onClick={() => { setMode('register'); setError(''); setSuccessMsg(''); }}
@@ -440,7 +380,6 @@ export default function AuthModal() {
         {/* MODE 2: REGISTER */}
         {mode === 'register' && (
           <div>
-            {!isRegOtpStep ? (
               <form onSubmit={handleRegisterSubmit} className="space-y-3">
                 {/* Random Avatar Selection Preview */}
                 <div className="flex items-center justify-between p-2.5 bg-[#140B0B] rounded-xl border border-[#F8F6F6]/10">
@@ -468,7 +407,7 @@ export default function AuthModal() {
                     required
                     value={regName}
                     onChange={(e) => setRegName(e.target.value)}
-                    placeholder="Riya Sharma"
+                    placeholder="Enter your full name"
                     className="w-full bg-[#160D0D] border border-[#F8F6F6]/10 rounded-xl px-3 py-2 text-xs text-[#F8F6F6] focus:outline-none focus:border-[#FF9E00]"
                   />
                 </div>
@@ -481,7 +420,7 @@ export default function AuthModal() {
                       required
                       value={regUsername}
                       onChange={(e) => setRegUsername(e.target.value)}
-                      placeholder="riya_22"
+                      placeholder="e.g. rahul_12"
                       className="w-full bg-[#160D0D] border border-[#F8F6F6]/10 rounded-xl px-3 py-2 text-xs text-[#F8F6F6] focus:outline-none focus:border-[#FF9E00]"
                     />
                   </div>
@@ -492,7 +431,7 @@ export default function AuthModal() {
                       required
                       value={regPhone}
                       onChange={(e) => setRegPhone(e.target.value)}
-                      placeholder="9876543211"
+                      placeholder="10-digit mobile"
                       className="w-full bg-[#160D0D] border border-[#F8F6F6]/10 rounded-xl px-3 py-2 text-xs text-[#F8F6F6] focus:outline-none focus:border-[#FF9E00]"
                     />
                   </div>
@@ -505,7 +444,7 @@ export default function AuthModal() {
                     required
                     value={regEmail}
                     onChange={(e) => setRegEmail(e.target.value)}
-                    placeholder="riya@example.com"
+                    placeholder="you@example.com"
                     className="w-full bg-[#160D0D] border border-[#F8F6F6]/10 rounded-xl px-3 py-2 text-xs text-[#F8F6F6] focus:outline-none focus:border-[#FF9E00]"
                   />
                 </div>
@@ -563,38 +502,9 @@ export default function AuthModal() {
                   disabled={loading}
                   className="w-full btn-theme-primary py-2.5 rounded-xl font-bold text-xs shadow-lg mt-3 cursor-pointer"
                 >
-                  {loading ? 'Submitting...' : 'Continue & Verify via OTP'}
+                  {loading ? 'Creating Account...' : 'Register Account'}
                 </button>
               </form>
-            ) : (
-              <form onSubmit={handleRegisterSubmit} className="space-y-4">
-                <div className="text-center p-3 rounded-2xl bg-[#140B0B] border border-[#FF9E00]/30">
-                  <p className="text-xs text-[#FF9E00]">
-                    Enter the 6-digit OTP code sent to <strong>{regEmail}</strong>
-                  </p>
-                </div>
-
-                <div>
-                  <input
-                    type="text"
-                    maxLength={6}
-                    required
-                    value={regOtp}
-                    onChange={(e) => setRegOtp(e.target.value)}
-                    placeholder="6-digit OTP"
-                    className="w-full bg-[#160D0D] border border-[#F8F6F6]/10 rounded-xl px-3.5 py-3 text-center text-lg font-mono font-bold tracking-widest text-[#F8F6F6] focus:outline-none focus:border-[#FF9E00]"
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full btn-theme-primary py-2.5 rounded-xl font-bold text-xs shadow-lg cursor-pointer"
-                >
-                  {loading ? 'Verifying...' : 'Verify OTP & Finish Registration'}
-                </button>
-              </form>
-            )}
 
             <div className="mt-4 pt-3 border-t border-[#F8F6F6]/10 text-center text-xs text-[#786E6E]">
               Already have an account?{' '}

@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import {
+  register,
   registerRequest,
   registerVerify,
   login,
@@ -15,6 +16,7 @@ import { requireAuth } from '../middleware/authMiddleware.js';
 
 const router = Router();
 
+router.post('/register', register);
 router.post('/register/request-otp', registerRequest);
 router.post('/register/verify', registerVerify);
 router.post('/login', login);
