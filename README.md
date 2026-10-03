@@ -123,8 +123,8 @@ You can use these pre-seeded accounts to test the live platform immediately:
 
 | Role | Login Identifier | Password | Access Privileges |
 | :--- | :--- | :--- | :--- |
-| **Store Admin** | `admin@eshop.com` | `AdminPassword@123` | Full Admin Operations Console, Product CRUD, Live Deal Dispatcher, Store Settings |
-| **Customer** | `customer@eshop.com` | `Customer@123` | Retail Shopping, AI Concierge, Cart & Checkout, Order Tracking, PDF Invoices |
+| **Store Admin** | `admin` | `Password` | Full Admin Operations Console, Product CRUD, Live Deal Dispatcher, Store Settings |
+| **Customer** | `customer` | `Customerpassword` | Retail Shopping, AI Concierge, Cart & Checkout, Order Tracking, PDF Invoices |
 
 *(Or click **"Register New Account"** on the live site to create your own personal account!)*
 
@@ -155,8 +155,8 @@ CLIENT_URL=http://localhost:5173
 MONGODB_URI=mongodb+srv://<username>:<password>@eshop.buedvll.mongodb.net/eshop?retryWrites=true&w=majority
 JWT_ACCESS_SECRET=your_jwt_secret_key_here
 JWT_REFRESH_SECRET=your_refresh_secret_key_here
-ADMIN_EMAIL=admin@eshop.com
-ADMIN_PASSWORD=AdminPassword@123
+ADMIN_EMAIL=admin
+ADMIN_PASSWORD=Password
 ```
 
 ### 4. Seed Cloud Database (Optional)
