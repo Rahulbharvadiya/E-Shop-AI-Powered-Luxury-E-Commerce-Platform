@@ -5,7 +5,7 @@ export default function SidebarFilters({
   categories = [],
   selectedCategory = '',
   onSelectCategory,
-  priceRange = [0, 100000],
+  priceRange = [0, 1000000],
   onPriceChange,
   minRating = 0,
   onRatingChange,
@@ -44,7 +44,7 @@ export default function SidebarFilters({
   const hasActiveFilters = 
     selectedCategory !== '' ||
     priceRange[0] > 0 ||
-    priceRange[1] < 100000 ||
+    priceRange[1] < 1000000 ||
     minRating > 0 ||
     minDiscount > 0 ||
     inStockOnly ||
@@ -143,8 +143,8 @@ export default function SidebarFilters({
           <input
             type="range"
             min="0"
-            max="100000"
-            step="1000"
+            max="1000000"
+            step="5000"
             value={priceRange[1]}
             onChange={(e) => onPriceChange([priceRange[0], Number(e.target.value)])}
             className="w-full h-1.5 bg-[#E7DFD2] rounded-lg appearance-none cursor-pointer accent-[#C2603F]"
@@ -169,8 +169,8 @@ export default function SidebarFilters({
                 type="number"
                 value={priceRange[1]}
                 min={priceRange[0]}
-                max="100000"
-                onChange={(e) => onPriceChange([priceRange[0], Math.min(100000, Number(e.target.value))])}
+                max="1000000"
+                onChange={(e) => onPriceChange([priceRange[0], Math.min(1000000, Number(e.target.value))])}
                 className="w-full bg-transparent text-[#1F2421] focus:outline-none font-sans tabular-nums text-xs"
                 placeholder="Max"
               />

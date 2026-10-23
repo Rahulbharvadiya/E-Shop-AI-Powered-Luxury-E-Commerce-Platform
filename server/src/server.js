@@ -161,7 +161,7 @@ app.use(errorHandler);
 // Connect DB & Start Server
 const PORT = env.PORT;
 
-if (process.env.NODE_ENV !== 'test') {
+if (process.env.NODE_ENV !== 'test' && !process.argv.some(arg => arg.includes('test'))) {
   connectDB().then(() => {
     server.listen(PORT, () => {
       console.log(`🚀 [E-Shop Server] Running on http://localhost:${PORT} in ${env.NODE_ENV} mode`);

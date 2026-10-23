@@ -42,7 +42,7 @@ export default function App() {
   // Filters & Sorting State
   const [selectedCategory, setSelectedCategory] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
-  const [priceRange, setPriceRange] = useState([0, 100000]);
+  const [priceRange, setPriceRange] = useState([0, 1000000]);
   const [minRating, setMinRating] = useState(0);
   const [minDiscount, setMinDiscount] = useState(0);
   const [inStockOnly, setInStockOnly] = useState(false);
@@ -128,12 +128,12 @@ export default function App() {
         if (selectedCategory && selectedCategory !== 'all') params.append('category', selectedCategory);
         if (searchQuery.trim()) params.append('search', searchQuery.trim());
         if (priceRange[0] > 0) params.append('minPrice', priceRange[0]);
-        if (priceRange[1] < 100000) params.append('maxPrice', priceRange[1]);
+        if (priceRange[1] < 1000000) params.append('maxPrice', priceRange[1]);
         if (minRating > 0) params.append('rating', minRating);
         if (minDiscount > 0) params.append('minDiscount', minDiscount);
         if (inStockOnly) params.append('inStock', 'true');
         if (sortBy) params.append('sort', sortBy);
-        params.append('limit', '40');
+        params.append('limit', '100');
 
         const res = await fetch(`/api/products?${params.toString()}`);
         const data = await res.json();
@@ -158,7 +158,7 @@ export default function App() {
   const handleResetFilters = () => {
     setSelectedCategory('');
     setSearchQuery('');
-    setPriceRange([0, 100000]);
+    setPriceRange([0, 1000000]);
     setMinRating(0);
     setMinDiscount(0);
     setInStockOnly(false);

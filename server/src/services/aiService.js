@@ -1,8 +1,9 @@
+import mongoose from 'mongoose';
 import { Product } from '../models/Product.js';
 import { ChatMessage } from '../models/ChatMessage.js';
 
 export async function getRecommendations(userId = null) {
-  // Return 12 products for grid
+  // Return 12 verified featured & high-rated products for the AI Curations grid
   const products = await Product.find({ active: true })
     .sort({ isFeatured: -1, discountPercent: -1, ratingAverage: -1 })
     .limit(12);
@@ -42,187 +43,233 @@ export async function smartSearch(query = '') {
   return products;
 }
 
-// Sub-item specific keyword triggers to guarantee exact item matching
+// Sub-item specific keyword triggers to guarantee exact item matching across 100 products
 const SUB_PRODUCT_TRIGGERS = [
+  // Watches & Luxury Timepieces
   {
-    keywords: ['shoe', 'shoes', 'sneaker', 'sneakers', 'kicks', 'footwear', 'jordan', 'air jordan'],
-    filter: { categorySlug: 'fashion', name: /jordan|shoe|sneaker/i },
-    title: 'Sneakers & Footwear',
+    keywords: ['rolex', 'submariner', 'swiss watch', 'luxury timepiece', 'luxury watch', 'omega', 'moonwatch', 'speedmaster', 'cartier', 'santos', 'tag heuer', 'carrera', 'breitling', 'navitimer', 'tissot', 'prx', 'seiko', 'prospex', 'mechanical watch', 'automatic watch', 'chronograph'],
+    filter: { categorySlug: 'watches', name: /rolex|omega|cartier|tag heuer|breitling|tissot|seiko/i },
+    title: 'Swiss Luxury & Haute Horlogerie Timepieces',
     clarifications: [
-      '👟 Nike Air Jordan 1 Chicago OG',
-      '🔥 Sneakers with 30%+ Discount',
-      '👕 Match with Hoodies & Streetwear',
-      '💰 Under ₹15,000 Picks'
+      '👑 Rolex Submariner Date (Oystersteel 300m)',
+      '🚀 Omega Speedmaster Professional Moonwatch',
+      '💎 Cartier Santos de Cartier Automatic',
+      '🏎️ TAG Heuer Carrera Chronograph'
     ]
   },
   {
-    keywords: ['hoodie', 'hoodies', 'sweatshirt', 'fleece'],
-    filter: { categorySlug: 'fashion', name: /hoodie|sweatshirt/i },
-    title: 'Hoodies & Streetwear',
+    keywords: ['apple watch', 'apple watch ultra', 'smart watch', 'smartwatch', 'smartwatches', 'galaxy watch', 'fenix', 'garmin', 'fitness watch', 'g-shock', 'fossil'],
+    filter: { categorySlug: 'watches' },
+    title: 'Smartwatches & Sports GPS Watches',
     clarifications: [
-      '👕 Adidas Heavyweight Trefoil Hoodie',
-      '🧥 Levi’s Denim Trucker Jacket',
-      '👟 Air Jordan 1 Sneakers'
+      '🍏 Apple Watch Ultra 2 (49mm Titanium)',
+      '🏃 Garmin Fenix 7 Pro Sapphire Solar',
+      '🔄 Samsung Galaxy Watch 6 Classic',
+      '⌚ Tissot PRX Powermatic 80'
     ]
   },
+
+  // Footwear & Sneakers
   {
-    keywords: ['jacket', 'jackets', 'denim', 'trucker'],
-    filter: { categorySlug: 'fashion', name: /jacket|denim/i },
-    title: 'Denim Jackets & Outerwear',
+    keywords: ['shoe', 'shoes', 'sneaker', 'sneakers', 'kicks', 'footwear', 'jordan', 'air jordan', 'samba', 'dunk', 'dunks', 'travis', 'yeezy', 'new balance', 'chuck', 'converse', 'suede'],
+    filter: { categorySlug: 'fashion', name: /jordan|samba|sneaker|dunk|new balance|converse|yeezy/i },
+    title: 'Designer Sneakers & Collector Footwear',
     clarifications: [
-      '🧥 Levi’s Vintage Trucker Denim',
-      '👕 Adidas Trefoil Hoodie',
-      '🕶️ Ray-Ban Aviators'
+      '👟 Nike Air Jordan 1 Chicago Lost & Found',
+      '🔥 Adidas Samba OG Classic Leather',
+      '👟 New Balance 990v6 Made in USA',
+      '💰 Under ₹15,000 Sneakers'
     ]
   },
+
+  // Jackets & Outerwear
   {
-    keywords: ['sunglasses', 'sunglass', 'shades', 'aviator', 'aviators', 'eyewear', 'glasses', 'ray-ban', 'rayban'],
-    filter: { categorySlug: 'fashion', name: /aviator|sunglass|ray-ban/i },
-    title: 'Luxury Sunglasses & Eyewear',
+    keywords: ['jacket', 'jackets', 'outerwear', 'trench', 'trench coat', 'coat', 'burberry', 'leather jacket', 'schott', 'moncler', 'puffer', 'denim jacket', 'trucker', 'bomber'],
+    filter: { categorySlug: 'fashion', name: /jacket|coat|trench|puffer|trucker/i },
+    title: 'Heritage Outerwear & Luxury Jackets',
+    clarifications: [
+      '🧥 Burberry Kensington Heritage Trench Coat',
+      '🏍️ Schott NYC Classic Perfecto Leather Jacket',
+      '❄️ Moncler Maya Down Puffer Jacket',
+      '🧥 Levi’s Vintage Sherpa Trucker Denim'
+    ]
+  },
+
+  // Fashion Accessories & Eyewear
+  {
+    keywords: ['sunglasses', 'sunglass', 'shades', 'aviator', 'aviators', 'wayfarer', 'eyewear', 'glasses', 'ray-ban', 'rayban', 'belt', 'gucci', 'bag', 'tote', 'prada', 'scarf'],
+    filter: { categorySlug: 'fashion', name: /aviator|wayfarer|ray-ban|gucci|prada|scarf|belt/i },
+    title: 'Luxury Eyewear & Designer Accessories',
     clarifications: [
       '🕶️ Ray-Ban Classic Polarized Aviator',
-      '👔 Match with Denim Jackets',
-      '🔥 30%+ Off Luxury Accessories'
+      '🕶️ Ray-Ban Original Wayfarer Polarized',
+      '👜 Prada Re-Nylon & Saffiano Leather Tote',
+      '🧣 Burberry Giant Check Cashmere Scarf'
     ]
   },
+
+  // MacBooks & Apple Computers
   {
-    keywords: ['coffee', 'espresso', 'nespresso', 'barista', 'cappuccino', 'latte', 'cafe'],
-    filter: { categorySlug: 'home', name: /nespresso|coffee/i },
-    title: 'Barista Espresso & Coffee',
+    keywords: ['macbook', 'mac', 'macbook pro', 'macbook air', 'm3', 'm3 max', 'm2', 'mac studio', 'imac', 'mac mini'],
+    filter: { categorySlug: 'laptops', name: /macbook|mac studio|imac|mac mini/i },
+    title: 'Apple Mac & Silicon Workstations',
     clarifications: [
-      '☕ Nespresso Vertuo Pop Machine',
-      '💡 Philips Hue Ambient Lighting',
-      '🪑 Ergonomic High-Back Chair'
+      '💻 MacBook Pro 16 M3 Max (36GB RAM / 1TB SSD)',
+      '💼 MacBook Air 15 M3 (Liquid Retina)',
+      '🖥️ Apple Mac Studio M2 Ultra (64GB RAM)',
+      '🖥️ Apple iMac 24 4.5K Retina M3'
     ]
   },
+
+  // Gaming Laptops
   {
-    keywords: ['chair', 'chairs', 'office chair', 'desk chair', 'ergonomic chair', 'seating'],
-    filter: { categorySlug: 'home', name: /chair|seat/i },
-    title: 'Ergonomic Desk & Office Chairs',
-    clarifications: [
-      '🪑 Green Soul Ergonomic High-Back Chair',
-      '💡 Philips Hue Desk Lighting',
-      '☕ Nespresso Coffee for Desk'
-    ]
-  },
-  {
-    keywords: ['light', 'lights', 'lighting', 'lightstrip', 'ambient light', 'philips hue', 'smart light', 'rgb'],
-    filter: { categorySlug: 'home', name: /light|hue/i },
-    title: 'Smart Ambient Lighting',
-    clarifications: [
-      '💡 Philips Hue Ambient Lightstrip Starter',
-      '🪑 Ergonomic Workspace Chair',
-      '🧹 Dyson Cordless Vacuum'
-    ]
-  },
-  {
-    keywords: ['vacuum', 'cleaner', 'cleaning', 'dyson', 'dust'],
-    filter: { categorySlug: 'home', name: /vacuum|dyson/i },
-    title: 'Cordless Laser Cleaning',
-    clarifications: [
-      '🧹 Dyson V15 Detect Laser Vacuum',
-      '💡 Philips Hue Smart Lighting',
-      '☕ Nespresso Vertuo Coffee'
-    ]
-  },
-  {
-    keywords: ['airpod', 'airpods', 'earbud', 'earbuds', 'in-ear', 'tws'],
-    filter: { categorySlug: 'audio', name: /airpod|earbud/i },
-    title: 'Wireless Earbuds',
-    clarifications: [
-      '🎵 Apple AirPods Pro 2 (USB-C)',
-      '🎧 Sony WH-1000XM5 Over-Ear',
-      '🔊 JBL Waterproof Speaker'
-    ]
-  },
-  {
-    keywords: ['over-ear', 'headphone', 'headphones', 'headset', 'anc headphone'],
-    filter: { categorySlug: 'audio', name: /wh-1000xm5|quietcomfort|headphone/i },
-    title: 'Noise Canceling Over-Ear Headphones',
-    clarifications: [
-      '🎧 Sony WH-1000XM5 (Top ANC)',
-      '👑 Bose QuietComfort 45 (Plush Comfort)',
-      '🎵 AirPods Pro 2 Earbuds'
-    ]
-  },
-  {
-    keywords: ['speaker', 'speakers', 'bluetooth speaker', 'portable speaker'],
-    filter: { categorySlug: 'audio', name: /speaker|flip/i },
-    title: 'Portable Bluetooth Speakers',
-    clarifications: [
-      '🔊 JBL Flip 6 Waterproof Speaker',
-      '🎧 Sony Noise Canceling Headphones',
-      '🎵 Apple AirPods Pro 2'
-    ]
-  },
-  {
-    keywords: ['macbook', 'mac', 'apple laptop', 'm3'],
-    filter: { categorySlug: 'laptops', name: /macbook/i },
-    title: 'Apple MacBook M3 Series',
-    clarifications: [
-      '💻 MacBook Air 15-inch M3',
-      '🎮 ASUS ROG Zephyrus RTX 4060',
-      '⚡ Dell XPS 16 4K OLED'
-    ]
-  },
-  {
-    keywords: ['gaming laptop', 'gaming pc', 'rtx laptop', 'high fps', 'zephyrus', 'rog'],
-    filter: { categorySlug: 'laptops', name: /rog|zephyrus|gaming/i },
+    keywords: ['gaming laptop', 'gaming pc', 'rtx', 'rtx 4090', 'rtx 4080', 'rtx 4070', 'rog', 'zephyrus', 'alienware', 'legion', 'razer', 'blade', 'msi titan', 'predator'],
+    filter: { categorySlug: 'laptops', name: /rog|zephyrus|alienware|legion|razer|msi|predator/i },
     title: 'High-Performance Gaming Laptops',
     clarifications: [
-      '🎮 ASUS ROG Zephyrus G16 (RTX 4060)',
-      '⚡ Dell XPS 16 (RTX 4070 Creator)',
-      '💼 MacBook Air 15 M3'
+      '⚡ ASUS ROG Zephyrus G16 (240Hz Nebula OLED)',
+      '👽 Alienware m18 R2 (i9-14900HX, RTX 4090)',
+      '🎮 Lenovo Legion Pro 7i Gen 9 (RTX 4090)',
+      '🐍 Razer Blade 16 (Dual-Mode Mini-LED)'
     ]
   },
+
+  // Ultrabooks & Creator Laptops
   {
-    keywords: ['budget laptop', 'cheap laptop', 'student laptop', 'ideapad', 'lenovo laptop'],
-    filter: { categorySlug: 'laptops', name: /ideapad|lenovo/i },
-    title: 'Value Productivity Laptops',
+    keywords: ['ultrabook', 'creator laptop', 'xps', 'dell xps', 'thinkpad', 'spectre', 'zenbook', 'surface'],
+    filter: { categorySlug: 'laptops', name: /xps|thinkpad|spectre|zenbook|surface/i },
+    title: 'Premium Ultrabooks & Creator Laptops',
     clarifications: [
-      '💰 Lenovo IdeaPad Slim 5 (Under ₹60K)',
-      '💼 MacBook Air 15 M3',
-      '🎮 ASUS ROG Gaming Laptop'
+      '⚡ Dell XPS 16 (Core Ultra 9, 4K+ OLED)',
+      '💼 Lenovo ThinkPad X1 Carbon Gen 12',
+      '✨ HP Spectre x360 2-in-1 OLED',
+      '💻 ASUS ZenBook Pro 14 OLED'
     ]
   },
+
+  // Noise Canceling Headphones & Audiophile Audio
   {
-    keywords: ['iphone', 'apple phone', 'ios'],
+    keywords: ['headphone', 'headphones', 'over-ear', 'noise canceling', 'noise cancelling', 'anc', 'wh-1000xm5', 'sony headphone', 'bose', 'quietcomfort', 'sennheiser', 'momentum', 'bowers', 'px8', 'beoplay', 'shure', 'audio-technica'],
+    filter: { categorySlug: 'audio', name: /wh-1000xm5|quietcomfort|momentum|px8|beoplay|shure|ath-m50x|over-ear|headphone/i },
+    title: 'Studio & Audiophile Over-Ear Headphones',
+    clarifications: [
+      '🎧 Sony WH-1000XM5 (Industry-Leading ANC)',
+      '👑 Bose QuietComfort Ultra Headphones',
+      '💎 Bowers & Wilkins Px8 Flagship Wireless',
+      '🎙️ Shure SM7B Cardioid Studio Microphone'
+    ]
+  },
+
+  // Wireless Earbuds
+  {
+    keywords: ['airpod', 'airpods', 'earbud', 'earbuds', 'in-ear', 'tws', 'wf-1000xm5'],
+    filter: { categorySlug: 'audio', name: /airpod|earbud|wf-1000xm5/i },
+    title: 'True Wireless Noise-Canceling Earbuds',
+    clarifications: [
+      '🎵 Apple AirPods Pro 2 (USB-C MagSafe)',
+      '🎧 Sony WF-1000XM5 ANC Earbuds',
+      '👑 Bose QuietComfort Ultra Earbuds',
+      '🎶 Sennheiser Momentum True Wireless 4'
+    ]
+  },
+
+  // Speakers & Soundbars
+  {
+    keywords: ['speaker', 'speakers', 'bluetooth speaker', 'marshall speaker', 'woburn', 'stanmore', 'beolit', 'sonos', 'jbl boombox', 'soundbar'],
+    filter: { categorySlug: 'audio', name: /speaker|woburn|stanmore|beolit|sonos|boombox/i },
+    title: 'Acoustic Home & Portable Bluetooth Speakers',
+    clarifications: [
+      '📻 Marshall Woburn III Bluetooth Home Speaker',
+      '🎶 Bang & Olufsen Beolit 20 Portable Speaker',
+      '🔊 Sonos Era 300 Spatial Audio Speaker',
+      '🌊 JBL Boombox 3 Waterproof Speaker'
+    ]
+  },
+
+  // Flagship Mobiles (iPhone, Samsung Galaxy, OnePlus, Pixel)
+  {
+    keywords: ['iphone', 'apple phone', 'ios', 'iphone 15 pro', '15 pro max', 'iphone 15'],
     filter: { categorySlug: 'mobiles', name: /iphone/i },
     title: 'Apple iPhone Flagships',
     clarifications: [
-      '🍎 iPhone 15 Pro Max (Titanium)',
-      '🤖 Samsung Galaxy S24 Ultra',
-      '⚡ OnePlus 12 5G (Best Value)'
+      '🍎 iPhone 15 Pro Max (Natural Titanium 256GB)',
+      '📱 iPhone 15 Plus (Pink 128GB)',
+      '⚡ OnePlus 12 5G (Flagship Speed)',
+      '🤖 Samsung Galaxy S24 Ultra'
     ]
   },
   {
-    keywords: ['s24', 'galaxy phone', 'samsung phone', 'ultra phone'],
-    filter: { categorySlug: 'mobiles', name: /s24|samsung/i },
-    title: 'Samsung Galaxy Flagships',
+    keywords: ['samsung', 'galaxy', 's24', 's24 ultra', 'z fold', 'z flip', 'galaxy fold', 'galaxy s24'],
+    filter: { categorySlug: 'mobiles', name: /samsung|galaxy/i },
+    title: 'Samsung Galaxy Flagships & Foldables',
     clarifications: [
-      '📱 Samsung Galaxy S24 Ultra (200MP)',
-      '⚡ OnePlus 12 5G (Best Value)',
-      '🍎 Apple iPhone 15 Pro Max'
+      '📱 Samsung Galaxy S24 Ultra 5G (Galaxy AI, 200MP)',
+      '📖 Samsung Galaxy Z Fold 5 (Dynamic AMOLED)',
+      '🪞 Samsung Galaxy Z Flip 5 (Compact Foldable)',
+      '⚡ OnePlus 12 5G'
     ]
   },
   {
-    keywords: ['oneplus', 'oneplus 12'],
-    filter: { categorySlug: 'mobiles', name: /oneplus/i },
-    title: 'OnePlus Flagship Series',
+    keywords: ['oneplus', 'pixel', 'google pixel', 'nothing phone', 'xiaomi', 'vivo', 'rog phone'],
+    filter: { categorySlug: 'mobiles', name: /oneplus|pixel|nothing|xiaomi|vivo|rog phone/i },
+    title: 'Android Flagships & Creator Phones',
     clarifications: [
-      '⚡ OnePlus 12 5G (16GB RAM/512GB)',
-      '📸 Google Pixel 8 Pro',
-      '📱 Samsung Galaxy S24 Ultra'
+      '⚡ OnePlus 12 5G (16GB RAM, 100W Charging)',
+      '📸 Google Pixel 8 Pro (Bay Blue, Tensor G3)',
+      '💡 Nothing Phone (2) Glyph Interface',
+      '🎮 ASUS ROG Phone 8 Pro (Esports Gaming)'
     ]
   },
+
+  // Espresso & Barista Coffee Machines
   {
-    keywords: ['pixel', 'google pixel', 'google phone'],
-    filter: { categorySlug: 'mobiles', name: /pixel/i },
-    title: 'Google Pixel AI Phones',
+    keywords: ['coffee', 'espresso', 'nespresso', 'breville', 'barista', 'delonghi', 'de\'longhi', 'cappuccino', 'latte', 'cafe', 'coffee maker', 'coffee machine'],
+    filter: { categorySlug: 'home', name: /nespresso|breville|de'longhi|smeg|coffee/i },
+    title: 'Barista Espresso & Gourmet Coffee Makers',
     clarifications: [
-      '📸 Google Pixel 8 Pro (Bay Blue)',
-      '⚡ OnePlus 12 5G',
-      '🍎 iPhone 15 Pro Max'
+      '☕ Breville Barista Touch Touchscreen Espresso',
+      '🇮🇹 De\'Longhi Magnifica S Automatic Espresso',
+      '☕ Nespresso Vertuo Pop Machine',
+      '🎨 SMEG 50s Retro Style Espresso Machine'
+    ]
+  },
+
+  // Ergonomic Chairs & Desk Setup
+  {
+    keywords: ['chair', 'chairs', 'office chair', 'desk chair', 'ergonomic chair', 'aeron', 'herman miller', 'steelcase', 'gesture', 'the sleep company'],
+    filter: { categorySlug: 'home', name: /chair|aeron|gesture|smartgrid/i },
+    title: 'Ergonomic Office & Executive Seating',
+    clarifications: [
+      '🪑 Herman Miller Aeron Ergonomic Chair',
+      '🪑 Steelcase Gesture Ergonomic Office Chair',
+      '🪑 The Sleep Company SmartGRID Onyx Chair',
+      '💡 Philips Hue Ambient Lighting'
+    ]
+  },
+
+  // Smart Cleaning & Vacuums
+  {
+    keywords: ['vacuum', 'cleaner', 'dyson', 'roomba', 'irobot', 'robot vacuum', 'dust', 'cordless vacuum'],
+    filter: { categorySlug: 'home', name: /vacuum|dyson|roomba/i },
+    title: 'Smart Vacuums & Cordless Cleaning',
+    clarifications: [
+      '🧹 Dyson V15 Detect Laser Cord-Free Vacuum',
+      '🤖 iRobot Roomba Combo j9+ Auto-Empty Robot',
+      '💡 Philips Hue Ambient Lighting',
+      '🪑 Herman Miller Aeron Chair'
+    ]
+  },
+
+  // Smart Lighting & Home Automation
+  {
+    keywords: ['light', 'lights', 'lighting', 'philips hue', 'hue', 'smart light', 'ambient light', 'lightstrip', 'bulb'],
+    filter: { categorySlug: 'home', name: /hue|light/i },
+    title: 'Philips Hue Smart Ambient Lighting',
+    clarifications: [
+      '💡 Philips Hue White & Color Starter Kit',
+      '🌈 Philips Hue Play Gradient Lightstrip 65"',
+      '☕ Breville Barista Touch Espresso Machine',
+      '🪑 Herman Miller Aeron Chair'
     ]
   }
 ];
@@ -232,91 +279,96 @@ const CATEGORY_MAP = {
   fashion: {
     slug: 'fashion',
     name: 'Fashion & Apparel',
-    keywords: ['fashion', 'apparel', 'clothes', 'clothing', 'wear', 'outfit', 'streetwear'],
+    keywords: ['fashion', 'apparel', 'clothes', 'clothing', 'wear', 'outfit', 'streetwear', 'sneaker', 'sneakers', 'jacket', 'trench', 'sunglasses'],
     defaultClarifications: [
-      '👟 Nike Air Jordan 1 Retro Kicks',
-      '🧥 Levi’s Vintage Denim Jacket',
-      '👕 Adidas Fleece Hoodie',
-      '🕶️ Ray-Ban Aviator Sunglasses'
+      '👟 Nike Air Jordan 1 Chicago OG',
+      '🧥 Burberry Kensington Heritage Trench Coat',
+      '🕶️ Ray-Ban Classic Polarized Aviator',
+      '👟 Adidas Originals Samba OG'
     ]
   },
   mobiles: {
     slug: 'mobiles',
     name: 'Mobiles & Tablets',
-    keywords: ['phone', 'phones', 'smartphone', 'smartphones', 'mobile', 'mobiles', 'cell', 'cellphone', '5g', 'tablet'],
+    keywords: ['phone', 'phones', 'smartphone', 'smartphones', 'mobile', 'mobiles', 'cell', 'cellphone', '5g', 'tablet', 'ipad'],
     defaultClarifications: [
+      '🍎 Apple iPhone 15 Pro Max Titanium',
+      '📱 Samsung Galaxy S24 Ultra (200MP)',
       '⚡ OnePlus 12 5G (Best Value ₹59,999)',
-      '🍎 Apple iPhone 15 Pro Max',
-      '📱 Samsung Galaxy S24 Ultra',
-      '📸 Google Pixel 8 Pro'
+      '📱 Apple iPad Pro 12.9 M2 Liquid Retina'
     ]
   },
   laptops: {
     slug: 'laptops',
     name: 'Laptops & Computers',
-    keywords: ['laptop', 'laptops', 'computer', 'computers', 'pc', 'notebook', 'ultrabook', 'workstation'],
+    keywords: ['laptop', 'laptops', 'computer', 'computers', 'pc', 'notebook', 'ultrabook', 'workstation', 'macbook', 'desktop', 'mac'],
     defaultClarifications: [
-      '💼 MacBook Air 15 M3 (All-Day Battery)',
-      '🎮 ASUS ROG Zephyrus (RTX 4060 Gaming)',
-      '💰 Lenovo IdeaPad Slim 5 (Under ₹60K)',
-      '⚡ Dell XPS 16 4K OLED'
+      '💻 MacBook Pro 16 M3 Max (36GB RAM)',
+      '⚡ Dell XPS 16 (Core Ultra 9, 4K+ OLED)',
+      '👽 Alienware m18 R2 Gaming (RTX 4090)',
+      '💼 ThinkPad X1 Carbon Gen 12'
     ]
   },
   audio: {
     slug: 'audio',
     name: 'Audio & Sound',
-    keywords: ['audio', 'sound', 'music', 'headphone', 'headphones', 'earphone', 'earphones', 'earbud', 'earbuds', 'anc', 'speaker'],
+    keywords: ['audio', 'sound', 'music', 'headphone', 'headphones', 'earphone', 'earphones', 'earbud', 'earbuds', 'anc', 'speaker', 'speakers', 'soundbar'],
     defaultClarifications: [
       '🎧 Sony WH-1000XM5 (Top ANC)',
       '🎵 Apple AirPods Pro 2 (USB-C)',
-      '👑 Bose QuietComfort 45 (Plush)',
-      '🔊 JBL Flip 6 Waterproof Speaker'
+      '💎 Bowers & Wilkins Px8 Wireless',
+      '📻 Marshall Woburn III Home Speaker'
     ]
   },
   watches: {
     slug: 'watches',
-    name: 'Smart Watches',
-    keywords: ['watch', 'watches', 'smartwatch', 'smartwatches', 'smart watch', 'timepiece', 'tracker', 'fitness tracker'],
+    name: 'Smart Watches & Timepieces',
+    keywords: ['watch', 'watches', 'smartwatch', 'smartwatches', 'smart watch', 'timepiece', 'tracker', 'fitness tracker', 'rolex', 'omega', 'cartier'],
     defaultClarifications: [
-      '⌚ Fossil Gen 6 Classic (₹14,995)',
-      '🔄 Samsung Galaxy Watch 6 Classic',
-      '🏃 Garmin Fenix 7 Pro Solar (GPS)',
-      '🍏 Apple Watch Ultra 2 Titanium'
+      '👑 Rolex Submariner Date (Oystersteel)',
+      '🚀 Omega Speedmaster Moonwatch',
+      '🍏 Apple Watch Ultra 2 (49mm Titanium)',
+      '🏃 Garmin Fenix 7 Pro Sapphire Solar'
     ]
   },
   home: {
     slug: 'home',
     name: 'Home & Living',
-    keywords: ['home', 'living', 'decor', 'room', 'house', 'furniture', 'appliance', 'smart home'],
+    keywords: ['home', 'living', 'decor', 'room', 'house', 'furniture', 'appliance', 'smart home', 'kitchen', 'espresso', 'coffee', 'chair', 'vacuum'],
     defaultClarifications: [
-      '🪑 Ergonomic High-Back Office Chair',
-      '💡 Philips Hue Ambient Lighting',
-      '☕ Nespresso Vertuo Barista Coffee',
-      '🧹 Dyson V15 Cordless Laser Vacuum'
+      '🪑 Herman Miller Aeron Ergonomic Chair',
+      '☕ Breville Barista Touch Espresso Machine',
+      '🧹 Dyson V15 Detect Laser Vacuum',
+      '💡 Philips Hue Color Starter Kit'
     ]
   }
 };
 
 const CATALOG_BRANDS = [
-  'Apple', 'Samsung', 'OnePlus', 'Google', 'Sony', 'Bose', 'JBL',
-  'Dell', 'ASUS', 'Lenovo', 'Nike', 'Adidas', "Levi's", 'Ray-Ban',
-  'Dyson', 'Philips', 'Nespresso', 'Garmin', 'Fossil', 'Green Soul'
+  'Apple', 'Samsung', 'OnePlus', 'Google', 'Nothing', 'Xiaomi', 'Vivo', 'Motorola',
+  'Sony', 'Bose', 'Sennheiser', 'Bowers & Wilkins', 'Bang & Olufsen', 'Marshall', 'JBL', 'Audio-Technica', 'Shure', 'Sonos',
+  'Dell', 'ASUS', 'Lenovo', 'HP', 'Razer', 'Alienware', 'MSI', 'Acer', 'Microsoft',
+  'Rolex', 'Omega', 'Cartier', 'TAG Heuer', 'Breitling', 'Tissot', 'Seiko', 'Casio', 'Garmin', 'Fossil',
+  'Nike', 'Adidas', "Levi's", 'Ray-Ban', 'Gucci', 'Burberry', 'Prada', 'Ralph Lauren', 'Tommy Hilfiger', 'Schott', 'Moncler', 'New Balance', 'Converse', 'Puma',
+  'Dyson', 'Philips', 'Nespresso', 'Breville', "De'Longhi", 'SMEG', 'Herman Miller', 'Steelcase', 'The Sleep Company', 'iRobot', 'Le Creuset'
 ];
 
 const OUT_OF_CATALOG_KEYWORDS = [
-  'book', 'books', 'guitar', 'piano', 'instrument', 'perfume', 'fragrance',
-  'cosmetic', 'makeup', 'grocery', 'food', 'snack', 'tire', 'car', 'bike',
-  'cycle', 'medicine', 'toy', 'bed', 'sofa', 'tv', 'television',
-  'refrigerator', 'fridge', 'washing machine'
+  'car', 'cars', 'motorcycle', 'motorcycles', 'bike', 'bikes', 'bicycle',
+  'pet food', 'dog food', 'cat food', 'medicine', 'prescription', 'dental',
+  'piano', 'guitar', 'violin', 'drums', 'raw grocery', 'vegetables', 'fruits',
+  'real estate', 'property', 'apartment', 'comic book', 'used textbook'
 ];
 
 // Vague / Ambiguous queries that need clarifying questions
 const VAGUE_QUERY_REGEX = /^(suggest|recommend|help|what|anything|something|gift|present|show me|options|browse|tell me|i want to buy|give me|best products|top items|what do you have)\b/i;
 
 export async function chatConcierge(userId, userMessage, sessionId) {
+  const safeUserId = (userId && mongoose.Types.ObjectId.isValid(userId)) ? userId : null;
+
   // Persist user's message
   await ChatMessage.create({
-    userId,
+    userId: safeUserId,
     sessionId,
     role: 'user',
     content: userMessage
@@ -328,10 +380,10 @@ export async function chatConcierge(userId, userMessage, sessionId) {
   let followUpQuestions = [];
   let maxBudget = null;
 
-  // 1. Parse Budget / Price (e.g. "under 30000", "below 60k", "under 1.5 lakh")
+  // 1. Parse Budget / Price (e.g. "under 30000", "below 60k", "under 1.5 lakh", "under 10 lakh")
   const kMatch = rawQuery.match(/(?:under|below|less than|within|around|upto|up to)\s*(?:₹|rs\.?|inr)?\s*(\d+(?:\.\d+)?)\s*k\b/i);
   const lakhMatch = rawQuery.match(/(?:under|below|less than|within|around|upto|up to)\s*(?:₹|rs\.?|inr)?\s*(\d+(?:\.\d+)?)\s*(?:lakh|lakhs|l)\b/i);
-  const rawNumMatch = rawQuery.match(/(?:under|below|less than|within|around|upto|up to)\s*(?:₹|rs\.?|inr)?\s*(\d{4,7})\b/i);
+  const rawNumMatch = rawQuery.match(/(?:under|below|less than|within|around|upto|up to)\s*(?:₹|rs\.?|inr)?\s*(\d{4,8})\b/i);
 
   if (kMatch) {
     maxBudget = parseFloat(kMatch[1]) * 1000;
@@ -343,21 +395,21 @@ export async function chatConcierge(userId, userMessage, sessionId) {
 
   // 2. Check for out-of-catalog items
   const isOutOfCatalog = OUT_OF_CATALOG_KEYWORDS.some(k => {
-    const r = new RegExp(`\\b${k}s?\\b`, 'i');
+    const r = new RegExp(`\\b${k}\\b`, 'i');
     return r.test(rawQuery);
   });
 
   if (isOutOfCatalog) {
-    reply = `We currently do not stock that item in our boutique catalog. Our certified collections specialize in:\n\n• **Mobiles & Tablets** (Apple, Samsung, OnePlus, Google)\n• **Laptops & Computers** (Apple MacBook, Dell XPS, ASUS ROG, Lenovo)\n• **Audio & Sound** (Sony, Apple AirPods, Bose, JBL)\n• **Smart Watches** (Apple Watch, Galaxy Watch, Garmin, Fossil)\n• **Fashion & Footwear** (Nike Air Jordans, Levi's, Adidas, Ray-Ban)\n• **Home & Living** (Dyson, Philips Hue, Nespresso, Ergonomic Chairs)\n\nWhich of these collections would you like me to recommend?`;
+    reply = `We do not stock that item in our curated boutique. Our certified collections specialize in:\n\n• **Mobiles & Tablets** (Apple, Samsung, OnePlus, Google, ROG)\n• **Laptops & Workstations** (MacBook Pro/Air, Dell XPS, Alienware, ROG, ThinkPad)\n• **Audio & Sound** (Sony, Bose, Bowers & Wilkins, Bang & Olufsen, Marshall, AirPods)\n• **Smart Watches & Luxury Timepieces** (Rolex, Omega, Cartier, TAG Heuer, Apple Watch, Garmin)\n• **Fashion & Footwear** (Nike Air Jordans, Burberry, Schott, Gucci, Adidas, Ray-Ban)\n• **Home & Living** (Herman Miller, Breville, De'Longhi, Dyson, Philips Hue, Nespresso)\n\nWhich of these collections would you like to explore?`;
     followUpQuestions = [
-      '👟 Luxury Sneakers & Streetwear',
-      '📱 Flagship 5G Mobiles',
-      '💻 High Performance Laptops',
-      '🎧 Wireless Noise Canceling Audio'
+      '👑 Swiss Luxury Watches (Rolex & Omega)',
+      '👟 Designer Sneakers & Streetwear',
+      '💻 High Performance Mac & Gaming Laptops',
+      '🎧 Audiophile & Noise Canceling Audio'
     ];
 
     const assistantMsg = await ChatMessage.create({
-      userId,
+      userId: safeUserId,
       sessionId,
       role: 'assistant',
       content: reply,
@@ -373,7 +425,7 @@ export async function chatConcierge(userId, userMessage, sessionId) {
     };
   }
 
-  // 3. Check for specific sub-product trigger (e.g. "shoes", "hoodie", "coffee", "airpods", "gaming laptop")
+  // 3. Check for specific sub-product trigger (e.g. "rolex", "shoes", "coffee", "macbook", "dyson", "gaming laptop")
   let matchedSubTrigger = null;
   for (const st of SUB_PRODUCT_TRIGGERS) {
     if (st.keywords.some(k => new RegExp(`\\b${k}\\b`, 'i').test(rawQuery))) {
@@ -394,7 +446,20 @@ export async function chatConcierge(userId, userMessage, sessionId) {
   // 5. Check for Brand Match
   let matchedBrand = null;
   for (const b of CATALOG_BRANDS) {
-    if (new RegExp(`\\b${b.toLowerCase()}\\b`, 'i').test(rawQuery) || (b.toLowerCase() === "levi's" && /\blevis?\b/i.test(rawQuery))) {
+    const brandLower = b.toLowerCase();
+    if (brandLower === "levi's" && /\blevis?\b/i.test(rawQuery)) {
+      matchedBrand = b;
+      break;
+    } else if (brandLower === "de'longhi" && /delonghi|de'longhi/i.test(rawQuery)) {
+      matchedBrand = b;
+      break;
+    } else if (brandLower === "bowers & wilkins" && /bowers|b&w/i.test(rawQuery)) {
+      matchedBrand = b;
+      break;
+    } else if (brandLower === "bang & olufsen" && /bang & olufsen|b&o|beoplay/i.test(rawQuery)) {
+      matchedBrand = b;
+      break;
+    } else if (new RegExp(`\\b${brandLower}\\b`, 'i').test(rawQuery)) {
       matchedBrand = b;
       break;
     }
@@ -403,7 +468,7 @@ export async function chatConcierge(userId, userMessage, sessionId) {
   // 6. Check for Deals / Discount Queries
   const isDealsQuery = /discount|deal|deals|offer|offers|cheap|cheapest|sale|promo|bargain|lowest price/i.test(rawQuery);
 
-  // EXECUTION PATH A: Specific Sub-product Trigger (e.g. user asked for "shoes" or "hoodie" or "airpods")
+  // EXECUTION PATH A: Specific Sub-product Trigger
   if (matchedSubTrigger) {
     const filter = { ...matchedSubTrigger.filter, active: true };
     if (matchedBrand) filter.brand = new RegExp(matchedBrand, 'i');
@@ -413,7 +478,6 @@ export async function chatConcierge(userId, userMessage, sessionId) {
       .sort({ ratingAverage: -1, discountPercent: -1 })
       .limit(4);
 
-    // If budget was requested but no product matched under budget
     if (maxBudget && matchedProducts.length === 0) {
       const affordable = await Product.find({ ...matchedSubTrigger.filter, active: true })
         .sort({ discountedPrice: 1 })
@@ -421,18 +485,18 @@ export async function chatConcierge(userId, userMessage, sessionId) {
       
       if (affordable.length > 0) {
         matchedProducts = affordable;
-        reply = `In our **${matchedSubTrigger.title}** collection, verified authentic items start from ₹${affordable[0].discountedPrice.toLocaleString()}. Here are the closest **Recommended** options for you:`;
+        reply = `In our **${matchedSubTrigger.title}** collection, authentic models start from ₹${affordable[0].discountedPrice.toLocaleString()}. Here are the closest **Recommended** options for you:`;
       } else {
         matchedProducts = await Product.find({ categorySlug: matchedSubTrigger.filter.categorySlug, active: true }).limit(3);
         reply = `Here are our top **Recommended** alternatives in this department:`;
       }
     } else {
-      reply = `Here are our **Recommended** picks for **${matchedSubTrigger.title}**! Each verified for authentic quality and guaranteed delivery:`;
+      reply = `Here are our top **Recommended** curations for **${matchedSubTrigger.title}**! Each verified for authentic craftsmanship and guaranteed delivery:`;
     }
 
     followUpQuestions = matchedSubTrigger.clarifications;
   }
-  // EXECUTION PATH B: Broad Category Trigger (e.g. user asked for "phones", "laptops", "audio", "fashion", "home")
+  // EXECUTION PATH B: Broad Category Trigger
   else if (matchedCategory) {
     const filter = { categorySlug: matchedCategory.slug, active: true };
     if (matchedBrand) filter.brand = new RegExp(matchedBrand, 'i');
@@ -450,7 +514,7 @@ export async function chatConcierge(userId, userMessage, sessionId) {
       const lowestPrice = affordable[0]?.discountedPrice || 0;
       matchedProducts = affordable;
 
-      reply = `In our curated **${matchedCategory.name}** collection, verified models start at ₹${lowestPrice.toLocaleString()} (${affordable[0]?.name || ''}). Here are our closest **Recommended** options:`;
+      reply = `In our **${matchedCategory.name}** collection, verified items start at ₹${lowestPrice.toLocaleString()} (${affordable[0]?.name || ''}). Here are our closest **Recommended** options:`;
       followUpQuestions = [
         `⭐ Best Value in ${matchedCategory.name}`,
         `💰 Alternative Items Under ₹${maxBudget.toLocaleString()}`,
@@ -459,13 +523,16 @@ export async function chatConcierge(userId, userMessage, sessionId) {
     } else {
       const budgetNote = maxBudget ? ` under ₹${maxBudget.toLocaleString()}` : '';
       const brandNote = matchedBrand ? ` from ${matchedBrand}` : '';
-      reply = `Here are our top **Recommended** picks for **${matchedCategory.name}**${brandNote}${budgetNote}, hand-matched to your request:`;
+      reply = `Here are our top **Recommended** picks for **${matchedCategory.name}**${brandNote}${budgetNote}, hand-matched from our 100-product catalog:`;
       followUpQuestions = matchedCategory.defaultClarifications;
     }
   }
-  // EXECUTION PATH C: Brand Search without Category (e.g. "Apple", "Nike", "Sony", "Samsung")
+  // EXECUTION PATH C: Brand Search without Category
   else if (matchedBrand) {
-    matchedProducts = await Product.find({ brand: new RegExp(matchedBrand, 'i'), active: true })
+    const filter = { brand: new RegExp(matchedBrand, 'i'), active: true };
+    if (maxBudget) filter.discountedPrice = { $lte: maxBudget };
+
+    matchedProducts = await Product.find(filter)
       .sort({ ratingAverage: -1, discountPercent: -1 })
       .limit(4);
 
@@ -473,57 +540,63 @@ export async function chatConcierge(userId, userMessage, sessionId) {
     followUpQuestions = [
       `🔥 Show ${matchedBrand} with Highest Discounts`,
       `⭐ Show Top-Rated ${matchedBrand} Item`,
-      `📱 Compare ${matchedBrand} with Flagships`
+      `📱 Compare ${matchedBrand} with Alternatives`
     ];
   }
   // EXECUTION PATH D: Deals & Discounts Query
   else if (isDealsQuery) {
-    matchedProducts = await Product.find({ active: true })
+    const filter = { active: true };
+    if (maxBudget) filter.discountedPrice = { $lte: maxBudget };
+
+    matchedProducts = await Product.find(filter)
       .sort({ discountPercent: -1, ratingAverage: -1 })
       .limit(4);
 
-    reply = `Here are our top **Recommended** mega-deal highlights across the store featuring discounts up to **42%+ OFF**:`;
+    reply = `Here are our top **Recommended** mega-deal highlights across our catalog featuring discounts up to **50%+ OFF**:`;
     followUpQuestions = [
-      '👟 Fashion & Sneaker Deals (40%+ OFF)',
+      '👟 Fashion & Sneaker Deals (30%+ OFF)',
       '🎧 Audio & Headphones Offers',
-      '⌚ Smartwatch Deals',
-      '💻 Laptop Promotions'
+      '⌚ Smartwatch & Horology Deals',
+      '💻 Laptop & Workstation Promotions'
     ];
   }
-  // EXECUTION PATH E: Vague / Ambiguous / Clarification Required Query
-  else if (VAGUE_QUERY_REGEX.test(rawQuery) || rawQuery.length < 15) {
+  // EXECUTION PATH E: Vague / Ambiguous Query
+  else if (VAGUE_QUERY_REGEX.test(rawQuery) || rawQuery.length < 12) {
     matchedProducts = await Product.find({ active: true, isFeatured: true })
-      .sort({ ratingAverage: -1 })
+      .sort({ ratingAverage: -1, discountPercent: -1 })
       .limit(3);
 
-    reply = `I'd love to help you find the perfect product! To help me recommend the exact right match, could you clarify:\n\n1. **Which category are you shopping for?** (Smartphones, Laptops, Audio/Headphones, Smartwatches, Sneakers/Fashion, or Home Living)\n2. **Who is this for or what is the primary use?**\n3. **Do you have a target budget in mind?**\n\nMeanwhile, here are today's top **Recommended** editor picks:`;
+    reply = `I would love to help you find the exact right product! To tailor my recommendations, could you tell me:\n\n1. **Which category interests you?** (Smartphones, Laptops, Audio, Swiss Watches, Designer Fashion, or Home Living)\n2. **Is there a preferred brand or use-case?**\n3. **Do you have a target budget?**\n\nMeanwhile, here are today's top **Recommended** editor picks:`;
     followUpQuestions = [
-      '👟 Luxury Sneakers & Streetwear',
-      '📱 Flagship 5G Smartphones',
-      '💻 Laptops for Work & Gaming',
-      '🎧 Noise Canceling Audio & Earbuds'
+      '👑 Swiss Luxury Timepieces (Rolex & Omega)',
+      '👟 Designer Sneakers & Streetwear',
+      '💻 Laptops for Work, Code & Gaming',
+      '🎧 Noise Canceling Headphones'
     ];
   }
-  // EXECUTION PATH F: Keyword Fallback
+  // EXECUTION PATH F: Multi-Token Keyword Search across 100 products
   else {
-    const cleanWords = cleanText(rawQuery).split(' ').filter(w => w.length > 2 && !['want', 'need', 'show', 'give', 'best', 'good', 'some', 'look', 'looking', 'tell', 'help'].includes(w));
+    const cleanWords = cleanText(rawQuery).split(/\s+/).filter(w => w.length > 2 && !['want', 'need', 'show', 'give', 'best', 'good', 'some', 'look', 'looking', 'tell', 'help', 'product', 'products', 'item', 'items'].includes(w));
     
     if (cleanWords.length > 0) {
       const orConditions = [];
       cleanWords.forEach(w => {
         const reg = new RegExp(w, 'i');
-        orConditions.push({ name: reg }, { brand: reg }, { shortInfo: reg }, { categorySlug: reg });
+        orConditions.push({ name: reg }, { brand: reg }, { shortInfo: reg }, { categorySlug: reg }, { description: reg });
       });
 
-      matchedProducts = await Product.find({ active: true, $or: orConditions })
-        .sort({ ratingAverage: -1 })
+      const filter = { active: true, $or: orConditions };
+      if (maxBudget) filter.discountedPrice = { $lte: maxBudget };
+
+      matchedProducts = await Product.find(filter)
+        .sort({ ratingAverage: -1, discountPercent: -1 })
         .limit(4);
     }
 
     if (matchedProducts.length > 0) {
-      reply = `Based on your request, here are our top **Recommended** items from our catalog. Click any card to check specs & delivery:`;
+      reply = `Based on your request, here are our top **Recommended** items from our 100-product collection. Click any card to view complete specifications & check pincode delivery:`;
       followUpQuestions = [
-        '💰 Filter by price / budget range',
+        '💰 Filter by budget / price range',
         '⭐ Show top-rated buyer favorites',
         '🔥 Check highest discounts'
       ];
@@ -532,29 +605,40 @@ export async function chatConcierge(userId, userMessage, sessionId) {
         .sort({ ratingAverage: -1 })
         .limit(3);
 
-      reply = `I could not find an exact keyword match, but here are our top **Recommended** trending products. What specific category or brand can I find for you?`;
+      reply = `I couldn't find an exact match for that specific term, but here are our top **Recommended** trending luxury items. What specific brand or collection can I find for you?`;
       followUpQuestions = [
-        '👟 Explore Sneakers & Apparel',
-        '📱 Explore Flagship 5G Mobiles',
+        '👑 Explore Swiss Watches & Horology',
+        '👟 Explore Sneakers & Streetwear',
         '💻 Explore Laptops & Workstations',
-        '🎧 Explore Wireless Audio'
+        '☕ Explore Gourmet Espresso & Home'
       ];
     }
   }
 
-  // 7. Format Recommendations with explicit "Recommended" badge & dynamic reason
+  // 7. Format Recommendations with complete product payload and intelligent recommendation reasons
   const productRecommendations = matchedProducts.map((p, idx) => {
     const badge = idx === 0 ? '⭐ Top Recommendation' : '⭐ Recommended Pick';
-    const reason = generateRecommendationReason(p, maxBudget);
+    const reason = generateRecommendationReason(p);
 
     return {
+      _id: p._id,
       productId: p._id,
       name: p.name,
       slug: p.slug,
+      brand: p.brand,
+      categorySlug: p.categorySlug,
       image: p.images?.[0] || '',
+      images: p.images || [],
       price: p.discountedPrice,
-      originalPrice: p.price,
+      discountedPrice: p.discountedPrice,
+      originalPrice: p.originalPrice,
       discountPercent: p.discountPercent,
+      stockQuantity: p.stockQuantity,
+      ratingAverage: p.ratingAverage,
+      reviewCount: p.reviewCount,
+      shortInfo: p.shortInfo,
+      description: p.description,
+      specs: p.specs,
       recommendationBadge: badge,
       recommendedReason: reason
     };
@@ -562,7 +646,7 @@ export async function chatConcierge(userId, userMessage, sessionId) {
 
   // Persist assistant message
   const assistantMsg = await ChatMessage.create({
-    userId,
+    userId: safeUserId,
     sessionId,
     role: 'assistant',
     content: reply,
@@ -578,55 +662,36 @@ export async function chatConcierge(userId, userMessage, sessionId) {
   };
 }
 
-function generateRecommendationReason(product, maxBudget) {
-  if (product.discountPercent >= 30) {
-    return `Special Deal: ${product.discountPercent}% OFF original price • Rated ${product.ratingAverage || 4.8}★`;
+function generateRecommendationReason(product) {
+  // Use product's verified shortInfo if available, enhanced with discount and rating highlights
+  if (product.discountPercent >= 25 && product.shortInfo) {
+    return `${product.discountPercent}% OFF Special Deal • ${product.shortInfo}`;
   }
-  if (product.categorySlug === 'mobiles') {
-    if (product.name.includes('iPhone')) return 'Titanium design with A17 Pro performance & Apple Ecosystem';
-    if (product.name.includes('S24 Ultra')) return '200MP Camera with Galaxy AI and embedded S-Pen stylus';
-    if (product.name.includes('OnePlus')) return 'Best flagship value with 16GB RAM, 512GB storage & 100W charging';
-    if (product.name.includes('Pixel')) return 'Industry-leading computational photography and clean Google AI';
-    return 'Certified 5G flagship with vivid display and high battery endurance';
+
+  if (product.shortInfo && product.shortInfo.length > 10) {
+    return `${product.shortInfo} • Rated ${product.ratingAverage || 4.8}★`;
   }
-  if (product.categorySlug === 'laptops') {
-    if (product.name.includes('MacBook')) return 'All-day 18-hour battery life with silent, cool M3 performance';
-    if (product.name.includes('ROG')) return '240Hz ROG Nebula OLED display with RTX 4060 dedicated graphics';
-    if (product.name.includes('XPS')) return '4K Touch OLED with Intel Core Ultra 9 for elite creator workloads';
-    if (product.name.includes('Lenovo')) return 'Best budget ultrabook with Ryzen 7, 16GB RAM & 512GB SSD';
-    return 'High-performance computing with fast NVMe storage';
+
+  // Brand-specific luxury highlights
+  if (product.brand === 'Rolex' || product.brand === 'Omega' || product.brand === 'Cartier' || product.brand === 'TAG Heuer' || product.brand === 'Breitling') {
+    return 'Swiss luxury horology • Master Chronometer certified • Collector investment timepiece';
   }
-  if (product.categorySlug === 'audio') {
-    if (product.name.includes('Sony')) return 'Industry-leading Active Noise Cancellation with LDAC Hi-Res acoustics';
-    if (product.name.includes('AirPods')) return 'H2 chip with Adaptive Audio, Transparency mode & MagSafe USB-C';
-    if (product.name.includes('Bose')) return 'World-renowned acoustic comfort and signature balanced EQ';
-    if (product.name.includes('JBL')) return 'IP67 waterproof rugged build with 12h playtime and deep bass';
-    return 'Precision tuned audio with seamless wireless connectivity';
+  if (product.brand === 'Herman Miller' || product.brand === 'Steelcase') {
+    return 'Iconic ergonomic engineering with PostureFit SL spinal support for all-day comfort';
   }
-  if (product.categorySlug === 'watches') {
-    if (product.name.includes('Apple Watch Ultra')) return 'Aerospace-grade 49mm titanium with 36h multi-day battery & dive ready';
-    if (product.name.includes('Galaxy Watch')) return 'Physical rotating bezel with ECG, blood pressure & LTE independence';
-    if (product.name.includes('Garmin')) return 'Power Glass solar charging with multi-continent topographic GPS maps';
-    if (product.name.includes('Fossil')) return 'Smoke stainless steel mesh classic luxury styling with WearOS';
-    return 'Precision health monitoring and smart notification sync';
+  if (product.brand === 'Apple') {
+    return 'Seamless Apple Ecosystem integration with industry-leading silicon performance & retina visuals';
   }
-  if (product.categorySlug === 'fashion') {
-    if (product.name.includes('Jordan')) return 'Grail collector Chicago colorway with authentic verification assurance';
-    if (product.name.includes('Trucker') || product.name.includes("Levi's")) return 'Timeless rugged 100% cotton denim build with 40% discount';
-    if (product.name.includes('Ray-Ban')) return 'Classic gold frame with polarized green G-15 high contrast lenses';
-    if (product.name.includes('Hoodie') || product.name.includes('Adidas')) return 'Heavyweight cotton-fleece French terry for all-day streetwear comfort';
-    return 'Premium designer apparel with verified materials';
+  if (product.brand === 'Sony') {
+    return 'Industry-leading Active Noise Cancellation with Hi-Res LDAC audio processing';
   }
-  if (product.categorySlug === 'home') {
-    if (product.name.includes('Dyson')) return 'Laser dust illumination and piezo sensor deep cordless suction';
-    if (product.name.includes('Philips')) return '16 million ambient smart colors with voice & app home automation';
-    if (product.name.includes('Nespresso')) return 'Centrifusion technology for rich crema espresso in under 30 seconds';
-    if (product.name.includes('Chair')) return 'Ergonomic lumbar support with 3D armrests for long desk sessions';
-    return 'Modern luxury enhancement for smart living spaces';
+  if (product.brand === 'Nike' || product.brand === 'Adidas') {
+    return 'Grail street culture icon with authentic verified construction';
   }
-  return `Verified Authentic • Rated ${product.ratingAverage || 4.8}★ by luxury shoppers`;
+
+  return `Verified Authentic • Rated ${product.ratingAverage || 4.8}★ by luxury collectors`;
 }
 
 function cleanText(text) {
-  return text.replace(/[^\w\s]/gi, '').trim();
+  return text.replace(/[^\w\s]/gi, ' ').trim();
 }
