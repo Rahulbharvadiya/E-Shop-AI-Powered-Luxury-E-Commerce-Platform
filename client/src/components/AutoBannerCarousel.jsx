@@ -100,12 +100,12 @@ export default function AutoBannerCarousel({ onSelectCategory, onSelectProductSl
           </div>
 
           {/* Heading in High-Contrast Playfair Serif */}
-          <h2 className="font-serif text-2xl sm:text-4xl md:text-5xl font-bold text-[#FAF6EF] leading-[1.1] mb-3">
+          <h2 className="font-serif text-2xl sm:text-4xl md:text-5xl font-bold !text-white leading-[1.1] mb-3 drop-shadow-lg tracking-tight">
             {currentBanner.title}
           </h2>
 
           {/* Subtitle in Clean Inter / DM Sans */}
-          <p className="text-xs sm:text-sm text-[#FAF6EF]/85 max-w-lg mb-6 line-clamp-2 font-sans leading-relaxed">
+          <p className="text-xs sm:text-sm !text-[#FAF6EF] max-w-lg mb-6 line-clamp-2 font-sans leading-relaxed drop-shadow-sm font-medium">
             {currentBanner.subtitle || 'Experience flagship craftsmanship, uncompromised performance, and member-exclusive savings.'}
           </p>
 

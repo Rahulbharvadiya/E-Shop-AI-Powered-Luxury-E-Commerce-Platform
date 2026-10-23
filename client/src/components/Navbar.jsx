@@ -116,14 +116,14 @@ export default function Navbar({ onSelectCategory, onSearch, onOpenAdmin, onOpen
             }}
             className="flex items-center gap-3 group text-decoration-none cursor-pointer"
           >
-            <div className="w-10 h-10 rounded-[6px] bg-[#C2603F] text-white flex items-center justify-center shadow-md font-black group-hover:scale-105 transition-transform">
+            <div className="w-10 h-10 rounded-[6px] bg-[#C2603F] text-white flex items-center justify-center shadow-md font-black group-hover:scale-105 transition-transform shrink-0">
               <ShoppingBag className="w-5 h-5 stroke-[2.5]" />
             </div>
-            <div>
-              <span className="font-serif font-bold text-2xl tracking-tight text-[#FAF6EF] block leading-none">
+            <div className="flex flex-col justify-center">
+              <span className="font-serif font-bold text-2xl tracking-tight text-white block leading-none drop-shadow-sm">
                 E<span className="text-[#C2603F]">·</span>SHOP
               </span>
-              <span className="text-[9px] font-semibold text-[#B8935A] uppercase tracking-widest block mt-0.5 font-sans">
+              <span className="text-[10px] font-semibold text-[#B8935A] uppercase tracking-widest block mt-1 font-sans">
                 Haute Commerce
               </span>
             </div>

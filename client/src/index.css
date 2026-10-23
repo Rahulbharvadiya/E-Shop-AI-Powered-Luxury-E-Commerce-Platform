@@ -90,17 +90,31 @@ body {
 }
 
 /* Typography Hierarchy */
-h1, h2, h3, .font-head, .font-serif, .font-giliran {
+h1, h2, h3 {
   font-family: var(--font-head);
   letter-spacing: -0.01em;
-  color: var(--primary);
   font-weight: 700;
+}
+
+:where(h1, h2, h3) {
+  color: var(--primary);
 }
 
 h4, h5, h6 {
   font-family: var(--font-body);
   font-weight: 600;
+}
+
+:where(h4, h5, h6) {
   color: var(--text);
+}
+
+.font-head, .font-serif, .font-giliran {
+  font-family: var(--font-head);
+}
+
+.font-body, .font-sans, .font-poppins {
+  font-family: var(--font-body);
 }
 
 p, span, div, a, button, input, textarea, select {
