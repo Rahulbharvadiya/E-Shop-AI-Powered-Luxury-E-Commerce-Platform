@@ -224,45 +224,45 @@ export default function AccountModal({ isOpen, onClose, initialTab = 'orders' })
 
   return (
     <>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 md:p-6 bg-[#0D0606]/85 backdrop-blur-md animate-fade-in font-poppins">
-        <div className="relative w-full max-w-4xl bg-[#0D0606] border border-[#F8F6F6]/15 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 md:p-6 bg-[#0D0606]/65 backdrop-blur-sm animate-fade-in font-sans">
+        <div className="relative w-full max-w-4xl bg-[#FFFFFF] border border-[#E7DFD2] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] text-[#1F2421]">
         
         {/* Modal Header */}
-        <div className="px-6 py-4 border-b border-[#F8F6F6]/10 flex items-center justify-between bg-[#140B0B]">
+        <div className="px-6 py-4 border-b border-[#B8935A]/30 flex items-center justify-between bg-[#1E3A34] text-[#FAF6EF]">
           <div className="flex items-center gap-3">
             <img 
               src={user?.avatar || AVATAR_PRESETS[0]} 
               alt={user?.name} 
-              className="w-10 h-10 rounded-full object-cover border-2 border-[#FF9E00] shadow-md"
+              className="w-10 h-10 rounded-full object-cover border-2 border-[#B8935A] shadow-md"
             />
             <div>
-              <h2 className="text-base font-giliran font-bold text-[#F8F6F6] flex items-center gap-2">
+              <h2 className="text-base font-serif font-bold text-[#FAF6EF] flex items-center gap-2">
                 {user?.name || 'Customer Account'}
                 {user?.role === 'admin' && (
-                  <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-[#FF9E00] text-[#0D0606] font-mono">
+                  <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-[#B8935A] text-[#1E3A34] font-mono">
                     Admin
                   </span>
                 )}
               </h2>
-              <p className="text-xs text-[#786E6E] font-poppins">{user?.email}</p>
+              <p className="text-xs text-[#FAF6EF]/70 font-sans">{user?.email}</p>
             </div>
           </div>
           <button 
             onClick={onClose}
-            className="p-2 rounded-xl text-[#B8B0B0] hover:text-[#F8F6F6] hover:bg-[#201313] transition-colors cursor-pointer"
+            className="p-2 rounded-lg text-[#FAF6EF]/70 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Modal Navigation Tabs */}
-        <div className="flex border-b border-[#F8F6F6]/10 bg-[#140B0B] px-6 gap-2">
+        <div className="flex border-b border-[#E7DFD2] bg-[#FAF6EF] px-6 gap-2">
           <button
             onClick={() => setActiveTab('orders')}
             className={`py-3 px-4 text-xs font-bold flex items-center gap-2 border-b-2 transition-all cursor-pointer ${
               activeTab === 'orders'
-                ? 'border-[#FF9E00] text-[#FF9E00]'
-                : 'border-transparent text-[#786E6E] hover:text-[#F8F6F6]'
+                ? 'border-[#C2603F] text-[#C2603F]'
+                : 'border-transparent text-[#6B665E] hover:text-[#1E3A34]'
             }`}
           >
             <Package className="w-4 h-4" />
@@ -272,8 +272,8 @@ export default function AccountModal({ isOpen, onClose, initialTab = 'orders' })
             onClick={() => setActiveTab('addresses')}
             className={`py-3 px-4 text-xs font-bold flex items-center gap-2 border-b-2 transition-all cursor-pointer ${
               activeTab === 'addresses'
-                ? 'border-[#FF9E00] text-[#FF9E00]'
-                : 'border-transparent text-[#786E6E] hover:text-[#F8F6F6]'
+                ? 'border-[#C2603F] text-[#C2603F]'
+                : 'border-transparent text-[#6B665E] hover:text-[#1E3A34]'
             }`}
           >
             <MapPin className="w-4 h-4" />
@@ -283,8 +283,8 @@ export default function AccountModal({ isOpen, onClose, initialTab = 'orders' })
             onClick={() => setActiveTab('profile')}
             className={`py-3 px-4 text-xs font-bold flex items-center gap-2 border-b-2 transition-all cursor-pointer ${
               activeTab === 'profile'
-                ? 'border-[#FF9E00] text-[#FF9E00]'
-                : 'border-transparent text-[#786E6E] hover:text-[#F8F6F6]'
+                ? 'border-[#C2603F] text-[#C2603F]'
+                : 'border-transparent text-[#6B665E] hover:text-[#1E3A34]'
             }`}
           >
             <User className="w-4 h-4" />
@@ -293,20 +293,20 @@ export default function AccountModal({ isOpen, onClose, initialTab = 'orders' })
         </div>
 
         {/* Tab Contents */}
-        <div className="p-6 overflow-y-auto flex-1 space-y-6">
+        <div className="p-6 overflow-y-auto flex-1 space-y-6 bg-[#FFFFFF]">
           {/* TAB 1: ORDERS & TRACKING */}
           {activeTab === 'orders' && (
             <div className="space-y-6">
               {loadingOrders ? (
                 <div className="text-center py-12">
-                  <div className="w-8 h-8 border-3 border-[#FF9E00] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-                  <p className="text-xs text-[#B8B0B0]">Loading orders...</p>
+                  <div className="w-8 h-8 border-3 border-[#C2603F] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+                  <p className="text-xs text-[#6B665E]">Loading orders...</p>
                 </div>
               ) : orders.length === 0 ? (
-                <div className="text-center py-16 bg-[#140B0B] rounded-2xl border border-[#F8F6F6]/10">
-                  <Package className="w-12 h-12 text-[#786E6E] mx-auto mb-3" />
-                  <h3 className="text-base font-bold text-[#F8F6F6] font-giliran">No Orders Yet</h3>
-                  <p className="text-xs text-[#786E6E] mt-1 max-w-xs mx-auto">
+                <div className="text-center py-16 bg-[#FAF6EF] rounded-xl border border-[#E7DFD2]">
+                  <Package className="w-12 h-12 text-[#6B665E] mx-auto mb-3" />
+                  <h3 className="text-base font-bold text-[#1E3A34] font-serif">No Orders Yet</h3>
+                  <p className="text-xs text-[#6B665E] mt-1 max-w-xs mx-auto">
                     Explore our trending collections and place your first order today.
                   </p>
                 </div>
@@ -320,31 +320,31 @@ export default function AccountModal({ isOpen, onClose, initialTab = 'orders' })
                         <div
                           key={ord._id}
                           onClick={() => setSelectedOrder(ord)}
-                          className={`p-4 rounded-2xl border cursor-pointer transition-all ${
+                          className={`p-4 rounded-xl border cursor-pointer transition-all ${
                             isSelected
-                              ? 'bg-[#1C1111] border-[#FF9E00] shadow-lg shadow-[#FF9E00]/15'
-                              : 'bg-[#140B0B] border-[#F8F6F6]/10 hover:border-[#F8F6F6]/25'
+                              ? 'bg-[#FAF6EF] border-[#B8935A] ring-1 ring-[#B8935A]/30 shadow-sm'
+                              : 'bg-[#FFFFFF] border-[#E7DFD2] hover:border-[#B8935A]/50'
                           }`}
                         >
                           <div className="flex items-center justify-between text-xs mb-1.5">
-                            <span className="font-mono font-bold text-[#F8F6F6]">{ord.orderNo}</span>
+                            <span className="font-mono font-bold text-[#1F2421]">{ord.orderNo}</span>
                             <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase font-mono ${
-                              ord.orderStatus === 'DELIVERED' ? 'bg-[#FF9E00] text-[#0D0606]' :
-                              ord.orderStatus === 'CANCELLED' ? 'bg-rose-500/20 text-rose-400' :
-                              'bg-[#FF9E00]/15 text-[#FF9E00]'
+                              ord.orderStatus === 'DELIVERED' ? 'badge-sage' :
+                              ord.orderStatus === 'CANCELLED' ? 'badge-discount' :
+                              'badge-gold'
                             }`}>
                               {ord.orderStatus.replace(/_/g, ' ')}
                             </span>
                           </div>
-                          <div className="text-[11px] text-[#786E6E]">
+                          <div className="text-[11px] text-[#6B665E]">
                             {new Date(ord.createdAt).toLocaleDateString('en-IN', {
                               day: 'numeric', month: 'short', year: 'numeric'
                             })}
                           </div>
-                          <div className="mt-2 text-sm font-bold text-[#FF9E00] font-mono">
+                          <div className="mt-2 text-sm font-bold text-[#1E3A34] font-mono tabular-nums">
                             ₹{ord.pricing?.total?.toLocaleString()}
                           </div>
-                          <div className="text-[10px] text-[#786E6E] mt-0.5">
+                          <div className="text-[10px] text-[#6B665E] mt-0.5">
                             {ord.items?.length} item{ord.items?.length > 1 ? 's' : ''}
                           </div>
                         </div>
@@ -353,23 +353,23 @@ export default function AccountModal({ isOpen, onClose, initialTab = 'orders' })
                   </div>
 
                   {/* Right: Selected Order Detail & 5-Step Stepper */}
-                  <div className="md:col-span-2 bg-[#140B0B] border border-[#F8F6F6]/10 rounded-2xl p-5 space-y-6">
+                  <div className="md:col-span-2 bg-[#FAF6EF] border border-[#E7DFD2] rounded-xl p-5 space-y-6">
                     {selectedOrder ? (
                       <>
                         {/* Order Header & Invoice */}
-                        <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[#F8F6F6]/10">
+                        <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[#E7DFD2]">
                           <div>
-                            <span className="text-xs text-[#786E6E] block font-giliran uppercase tracking-wider">Order Reference</span>
-                            <div className="font-mono text-base font-bold text-[#F8F6F6] flex items-center gap-2">
+                            <span className="text-xs text-[#6B665E] block font-semibold uppercase tracking-wider">Order Reference</span>
+                            <div className="font-mono text-base font-bold text-[#1E3A34] flex items-center gap-2">
                               {selectedOrder.orderNo}
-                              <span className="text-xs text-[#786E6E] font-normal">
+                              <span className="text-xs text-[#6B665E] font-normal">
                                 ({selectedOrder.invoiceNo})
                               </span>
                             </div>
                           </div>
                           <button
                             onClick={() => handleDownloadInvoice(selectedOrder._id, selectedOrder.orderNo)}
-                            className="flex items-center gap-1.5 text-xs font-bold px-3.5 py-2 rounded-xl bg-[#FF9E00] text-[#0D0606] hover:bg-[#FFAE26] transition-all cursor-pointer shadow-md"
+                            className="btn-secondary flex items-center gap-1.5 text-xs font-bold px-3.5 py-2 rounded-lg transition-all cursor-pointer shadow-sm"
                           >
                             <Download className="w-3.5 h-3.5" />
                             PDF Invoice
@@ -378,25 +378,25 @@ export default function AccountModal({ isOpen, onClose, initialTab = 'orders' })
 
                         {/* 5-Step Visual Stepper */}
                         {selectedOrder.orderStatus === 'CANCELLED' ? (
-                          <div className="p-4 bg-rose-500/10 border border-rose-500/30 rounded-2xl flex items-center gap-3 text-rose-400 text-xs">
+                          <div className="p-4 bg-[#A63D2F]/10 border border-[#A63D2F]/30 rounded-xl flex items-center gap-3 text-[#A63D2F] text-xs">
                             <AlertCircle className="w-5 h-5 shrink-0" />
                             <div>
                               <span className="font-bold">This order has been CANCELLED.</span>
-                              <p className="text-[11px] text-[#786E6E] mt-0.5">
+                              <p className="text-[11px] text-[#6B665E] mt-0.5">
                                 Reason: {selectedOrder.timeline?.find(t => t.status === 'CANCELLED')?.note || 'Cancelled by customer'}
                               </p>
                             </div>
                           </div>
                         ) : (
                           <div className="space-y-4">
-                            <span className="text-[11px] font-bold text-[#786E6E] uppercase tracking-wider block font-giliran">
+                            <span className="text-[11px] font-bold text-[#1E3A34] uppercase tracking-wider block">
                               Live Delivery Tracking (5-Step Visual Stepper)
                             </span>
                             <div className="relative flex justify-between items-center px-2">
                               {/* Horizontal connector line */}
-                              <div className="absolute top-1/2 left-6 right-6 -translate-y-1/2 h-1 bg-[#251515] -z-0" />
+                              <div className="absolute top-1/2 left-6 right-6 -translate-y-1/2 h-1 bg-[#E7DFD2] -z-0" />
                               <div 
-                                className="absolute top-1/2 left-6 -translate-y-1/2 h-1 bg-[#FF9E00] -z-0 transition-all duration-700"
+                                className="absolute top-1/2 left-6 -translate-y-1/2 h-1 bg-[#4F7A5A] -z-0 transition-all duration-700"
                                 style={{
                                   width: `${(getStepIndex(selectedOrder.orderStatus) / 4) * 88}%`
                                 }}
@@ -411,10 +411,10 @@ export default function AccountModal({ isOpen, onClose, initialTab = 'orders' })
                                     <div
                                       className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs transition-all font-mono ${
                                         isCurrent
-                                          ? 'bg-[#FF9E00] text-[#0D0606] ring-4 ring-[#FF9E00]/30 shadow-lg shadow-[#FF9E00]/40 scale-110'
+                                          ? 'bg-[#4F7A5A] text-white ring-4 ring-[#4F7A5A]/25 shadow-md scale-110'
                                           : isPassed
-                                          ? 'bg-[#F8F6F6] text-[#0D0606]'
-                                          : 'bg-[#251515] text-[#786E6E]'
+                                          ? 'bg-[#4F7A5A] text-white'
+                                          : 'bg-[#FFFFFF] border border-[#E7DFD2] text-[#6B665E]'
                                       }`}
                                     >
                                       {isPassed && !isCurrent ? (
@@ -424,7 +424,7 @@ export default function AccountModal({ isOpen, onClose, initialTab = 'orders' })
                                       )}
                                     </div>
                                     <span className={`text-[10px] font-bold mt-2 text-center max-w-[65px] ${
-                                      isCurrent ? 'text-[#FF9E00]' : isPassed ? 'text-[#F8F6F6]' : 'text-[#786E6E]'
+                                      isCurrent ? 'text-[#4F7A5A]' : isPassed ? 'text-[#1F2421]' : 'text-[#6B665E]'
                                     }`}>
                                       {step.label}
                                     </span>
@@ -437,38 +437,38 @@ export default function AccountModal({ isOpen, onClose, initialTab = 'orders' })
 
                         {/* Items preview */}
                         <div className="space-y-2">
-                          <span className="text-[11px] font-bold text-[#786E6E] uppercase tracking-wider block font-giliran">
+                          <span className="text-[11px] font-bold text-[#1E3A34] uppercase tracking-wider block">
                             Ordered Items
                           </span>
                           <div className="space-y-2 max-h-36 overflow-y-auto pr-1">
                             {selectedOrder.items?.map((it, idx) => (
-                              <div key={idx} className="flex items-center justify-between p-2.5 rounded-xl bg-[#0D0606] border border-[#F8F6F6]/10 text-xs">
+                              <div key={idx} className="flex items-center justify-between p-2.5 rounded-lg bg-[#FFFFFF] border border-[#E7DFD2] text-xs">
                                 <div className="flex items-center gap-3">
-                                  <div className="w-10 h-10 rounded-lg overflow-hidden bg-[#160D0D] border border-[#F8F6F6]/10 flex items-center justify-center p-0.5 shrink-0">
+                                  <div className="w-10 h-10 rounded-lg overflow-hidden bg-[#FAF6EF] border border-[#E7DFD2] flex items-center justify-center p-0.5 shrink-0">
                                     <img src={it.image} alt={it.name} className="max-w-full max-h-full w-auto h-auto object-contain" />
                                   </div>
                                   <div>
-                                    <p className="font-semibold text-[#F8F6F6] truncate max-w-xs">{it.name}</p>
-                                    <p className="text-[#786E6E] text-[11px]">Qty: {it.quantity} &times; ₹{it.price?.toLocaleString()}</p>
+                                    <p className="font-semibold text-[#1F2421] truncate max-w-xs">{it.name}</p>
+                                    <p className="text-[#6B665E] text-[11px]">Qty: {it.quantity} &times; ₹{it.price?.toLocaleString()}</p>
                                   </div>
                                 </div>
-                                <span className="font-mono font-bold text-[#FF9E00]">₹{it.subtotal?.toLocaleString()}</span>
+                                <span className="font-mono font-bold text-[#1E3A34] tabular-nums">₹{it.subtotal?.toLocaleString()}</span>
                               </div>
                             ))}
                           </div>
                         </div>
 
                         {/* Shipping Address & Modification Policy Gate */}
-                        <div className="p-3.5 rounded-xl bg-[#0D0606] border border-[#F8F6F6]/10 text-xs space-y-1.5">
+                        <div className="p-3.5 rounded-lg bg-[#FFFFFF] border border-[#E7DFD2] text-xs space-y-1.5">
                           <div className="flex items-center justify-between">
-                            <span className="font-bold text-[#F8F6F6] flex items-center gap-1.5 font-giliran">
-                              <MapPin className="w-3.5 h-3.5 text-[#FF9E00]" />
+                            <span className="font-bold text-[#1E3A34] flex items-center gap-1.5">
+                              <MapPin className="w-3.5 h-3.5 text-[#1E3A34]" />
                               Shipping Address
                             </span>
                             {/* Address Modification Gate */}
                             {['OUT_FOR_DELIVERY', 'DELIVERED', 'CANCELLED'].includes(selectedOrder.orderStatus) ? (
-                              <span className="text-[10px] text-[#786E6E] flex items-center gap-1">
-                                <ShieldCheck className="w-3 h-3 text-[#786E6E]" />
+                              <span className="text-[10px] text-[#6B665E] flex items-center gap-1">
+                                <ShieldCheck className="w-3 h-3 text-[#6B665E]" />
                                 Address Locked
                               </span>
                             ) : (
@@ -486,24 +486,24 @@ export default function AccountModal({ isOpen, onClose, initialTab = 'orders' })
                                     isDefault: false
                                   });
                                 }}
-                                className="text-[11px] text-[#FF9E00] hover:text-[#FFAE26] font-bold flex items-center gap-1 cursor-pointer"
+                                className="text-[11px] text-[#C2603F] hover:text-[#A44E31] font-bold flex items-center gap-1 cursor-pointer"
                               >
                                 <Edit3 className="w-3 h-3" />
                                 Edit Address
                               </button>
                             )}
                           </div>
-                          <p className="text-[#B8B0B0] leading-relaxed">
+                          <p className="text-[#6B665E] leading-relaxed">
                             {selectedOrder.shippingAddress?.fullName} ({selectedOrder.shippingAddress?.phone})<br />
-                            {selectedOrder.shippingAddress?.line1}, {selectedOrder.shippingAddress?.city}, {selectedOrder.shippingAddress?.state} - <strong className="text-[#FF9E00] font-mono">{selectedOrder.shippingAddress?.pincode}</strong>
+                            {selectedOrder.shippingAddress?.line1}, {selectedOrder.shippingAddress?.city}, {selectedOrder.shippingAddress?.state} - <strong className="text-[#1E3A34] font-mono">{selectedOrder.shippingAddress?.pincode}</strong>
                           </p>
                         </div>
 
                         {/* Strict Policy Gate: Order Cancellation */}
-                        <div className="pt-2 flex items-center justify-between border-t border-[#F8F6F6]/10">
+                        <div className="pt-2 flex items-center justify-between border-t border-[#E7DFD2]">
                           {['OUT_FOR_DELIVERY', 'DELIVERED', 'CANCELLED'].includes(selectedOrder.orderStatus) ? (
-                            <div className="text-xs text-[#786E6E] flex items-center gap-1.5">
-                              <Ban className="w-4 h-4 text-[#786E6E]" />
+                            <div className="text-xs text-[#6B665E] flex items-center gap-1.5">
+                              <Ban className="w-4 h-4 text-[#6B665E]" />
                               <span>
                                 {selectedOrder.orderStatus === 'CANCELLED' 
                                   ? 'Order already cancelled' 
@@ -513,7 +513,7 @@ export default function AccountModal({ isOpen, onClose, initialTab = 'orders' })
                           ) : (
                             <button
                               onClick={() => setOrderToCancel(selectedOrder)}
-                              className="px-3.5 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs font-bold border border-rose-500/30 transition-colors cursor-pointer"
+                              className="px-3.5 py-1.5 rounded-lg bg-[#A63D2F]/10 hover:bg-[#A63D2F]/20 text-[#A63D2F] text-xs font-bold border border-[#A63D2F]/30 transition-colors cursor-pointer"
                             >
                               Cancel Order
                             </button>
@@ -521,12 +521,12 @@ export default function AccountModal({ isOpen, onClose, initialTab = 'orders' })
 
                           <div className="text-right">
                             {selectedOrder.pricing?.discount > 0 && (
-                              <span className="text-[11px] text-emerald-400 block font-mono font-semibold">
+                              <span className="text-[11px] text-[#4F7A5A] block font-mono font-semibold">
                                 Voucher: -₹{selectedOrder.pricing.discount.toLocaleString()}
                               </span>
                             )}
-                            <span className="text-[10px] text-[#786E6E] block font-giliran uppercase tracking-wider">Total</span>
-                            <span className="text-base font-bold text-[#F8F6F6] font-mono">
+                            <span className="text-[10px] text-[#6B665E] block uppercase tracking-wider">Total</span>
+                            <span className="text-base font-bold text-[#1E3A34] font-mono tabular-nums">
                               ₹{selectedOrder.pricing?.total?.toLocaleString()}
                             </span>
                           </div>
@@ -544,8 +544,8 @@ export default function AccountModal({ isOpen, onClose, initialTab = 'orders' })
             <div className="space-y-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-base font-bold text-[#F8F6F6] font-giliran">Delivery Addresses</h3>
-                  <p className="text-xs text-[#786E6E]">Manage your shipping destinations</p>
+                  <h3 className="text-base font-bold text-[#1E3A34] font-serif">Delivery Addresses</h3>
+                  <p className="text-xs text-[#6B665E]">Manage your shipping destinations</p>
                 </div>
                 {!isEditingAddress && (
                   <button
@@ -562,7 +562,7 @@ export default function AccountModal({ isOpen, onClose, initialTab = 'orders' })
                       });
                       setIsEditingAddress(true);
                     }}
-                    className="btn-theme-primary text-xs py-2 px-3.5 rounded-xl font-bold flex items-center gap-1.5 cursor-pointer shadow-md"
+                    className="btn-cta text-xs py-2 px-3.5 rounded-lg font-bold flex items-center gap-1.5 cursor-pointer shadow-sm"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     Add Address
@@ -571,57 +571,57 @@ export default function AccountModal({ isOpen, onClose, initialTab = 'orders' })
               </div>
 
               {isEditingAddress ? (
-                <form onSubmit={handleSaveProfileAddress} className="bg-[#140B0B] p-5 rounded-2xl border border-[#F8F6F6]/10 space-y-4">
-                  <h4 className="text-sm font-bold text-[#F8F6F6] font-giliran">New Address Details</h4>
+                <form onSubmit={handleSaveProfileAddress} className="bg-[#FAF6EF] p-5 rounded-xl border border-[#E7DFD2] space-y-4">
+                  <h4 className="text-sm font-bold text-[#1E3A34] font-serif">New Address Details</h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
                     <div>
-                      <label className="text-[#786E6E] block mb-1">Full Name</label>
+                      <label className="text-[#6B665E] block mb-1">Full Name</label>
                       <input 
                         type="text" 
                         required 
                         value={addressForm.fullName} 
                         onChange={e => setAddressForm({ ...addressForm, fullName: e.target.value })}
-                        className="w-full bg-[#1A1010] border border-[#F8F6F6]/10 rounded-xl px-3 py-2 text-[#F8F6F6]"
+                        className="w-full bg-[#FFFFFF] border border-[#E7DFD2] rounded-lg px-3 py-2 text-[#1F2421] focus:outline-none focus:border-[#1E3A34]"
                       />
                     </div>
                     <div>
-                      <label className="text-[#786E6E] block mb-1">Phone Number</label>
+                      <label className="text-[#6B665E] block mb-1">Phone Number</label>
                       <input 
                         type="tel" 
                         required 
                         value={addressForm.phone} 
                         onChange={e => setAddressForm({ ...addressForm, phone: e.target.value })}
-                        className="w-full bg-[#1A1010] border border-[#F8F6F6]/10 rounded-xl px-3 py-2 text-[#F8F6F6]"
+                        className="w-full bg-[#FFFFFF] border border-[#E7DFD2] rounded-lg px-3 py-2 text-[#1F2421] focus:outline-none focus:border-[#1E3A34]"
                       />
                     </div>
                     <div className="md:col-span-2">
-                      <label className="text-[#786E6E] block mb-1">Street Address</label>
+                      <label className="text-[#6B665E] block mb-1">Street Address</label>
                       <input 
                         type="text" 
                         required 
                         value={addressForm.line1} 
                         onChange={e => setAddressForm({ ...addressForm, line1: e.target.value })}
-                        className="w-full bg-[#1A1010] border border-[#F8F6F6]/10 rounded-xl px-3 py-2 text-[#F8F6F6]"
+                        className="w-full bg-[#FFFFFF] border border-[#E7DFD2] rounded-lg px-3 py-2 text-[#1F2421] focus:outline-none focus:border-[#1E3A34]"
                       />
                     </div>
                     <div>
-                      <label className="text-[#786E6E] block mb-1">City</label>
+                      <label className="text-[#6B665E] block mb-1">City</label>
                       <input 
                         type="text" 
                         required 
                         value={addressForm.city} 
                         onChange={e => setAddressForm({ ...addressForm, city: e.target.value })}
-                        className="w-full bg-[#1A1010] border border-[#F8F6F6]/10 rounded-xl px-3 py-2 text-[#F8F6F6]"
+                        className="w-full bg-[#FFFFFF] border border-[#E7DFD2] rounded-lg px-3 py-2 text-[#1F2421] focus:outline-none focus:border-[#1E3A34]"
                       />
                     </div>
                     <div>
-                      <label className="text-[#786E6E] block mb-1">PIN Code (Default 560035)</label>
+                      <label className="text-[#6B665E] block mb-1">PIN Code (Default 560035)</label>
                       <input 
                         type="text" 
                         required 
                         value={addressForm.pincode} 
                         onChange={e => setAddressForm({ ...addressForm, pincode: e.target.value })}
-                        className="w-full bg-[#1A1010] border border-[#F8F6F6]/10 rounded-xl px-3 py-2 text-[#F8F6F6] font-mono"
+                        className="w-full bg-[#FFFFFF] border border-[#E7DFD2] rounded-lg px-3 py-2 text-[#1F2421] font-mono focus:outline-none focus:border-[#1E3A34]"
                       />
                     </div>
                   </div>
@@ -629,13 +629,13 @@ export default function AccountModal({ isOpen, onClose, initialTab = 'orders' })
                     <button
                       type="button"
                       onClick={() => setIsEditingAddress(false)}
-                      className="px-4 py-2 rounded-xl text-xs text-[#786E6E] hover:text-[#F8F6F6]"
+                      className="btn-secondary px-4 py-2 rounded-lg text-xs cursor-pointer"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
-                      className="btn-theme-primary px-5 py-2 rounded-xl text-xs font-bold"
+                      className="btn-cta px-5 py-2 rounded-lg text-xs font-bold cursor-pointer"
                     >
                       Save Address
                     </button>
@@ -644,23 +644,23 @@ export default function AccountModal({ isOpen, onClose, initialTab = 'orders' })
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {(user?.addresses || []).length === 0 ? (
-                    <div className="md:col-span-2 text-center py-10 bg-[#140B0B] rounded-2xl border border-[#F8F6F6]/10 text-[#786E6E] text-xs">
+                    <div className="md:col-span-2 text-center py-10 bg-[#FAF6EF] rounded-xl border border-[#E7DFD2] text-[#6B665E] text-xs">
                       No saved addresses yet.
                     </div>
                   ) : (
                     user.addresses.map((addr, idx) => (
-                      <div key={idx} className="p-4 rounded-2xl bg-[#140B0B] border border-[#F8F6F6]/10 text-xs space-y-2">
+                      <div key={idx} className="p-4 rounded-xl bg-[#FAF6EF] border border-[#E7DFD2] text-xs space-y-2">
                         <div className="flex items-center justify-between">
-                          <span className="font-bold text-[#F8F6F6]">{addr.fullName}</span>
+                          <span className="font-bold text-[#1F2421]">{addr.fullName}</span>
                           {addr.isDefault && (
-                            <span className="px-2 py-0.5 rounded-full bg-[#FF9E00]/15 text-[#FF9E00] text-[10px] font-bold font-mono">
+                            <span className="badge-gold text-[10px] font-mono font-bold px-2 py-0.5">
                               Default
                             </span>
                           )}
                         </div>
-                        <p className="text-[#B8B0B0] leading-relaxed">
+                        <p className="text-[#6B665E] leading-relaxed">
                           {addr.line1}<br />
-                          {addr.city}, {addr.state} - <strong className="text-[#FF9E00] font-mono">{addr.pincode}</strong><br />
+                          {addr.city}, {addr.state} - <strong className="text-[#1E3A34] font-mono">{addr.pincode}</strong><br />
                           Phone: {addr.phone}
                         </p>
                       </div>
@@ -674,12 +674,12 @@ export default function AccountModal({ isOpen, onClose, initialTab = 'orders' })
           {/* TAB 3: PROFILE SETTINGS */}
           {activeTab === 'profile' && (
             <div className="max-w-xl mx-auto space-y-6">
-              <form onSubmit={handleUpdateProfile} className="space-y-5 bg-[#140B0B] p-6 rounded-2xl border border-[#F8F6F6]/10">
-                <h3 className="text-base font-bold text-[#F8F6F6] font-giliran">Edit Profile Details</h3>
+              <form onSubmit={handleUpdateProfile} className="space-y-5 bg-[#FAF6EF] p-6 rounded-xl border border-[#E7DFD2]">
+                <h3 className="text-base font-bold text-[#1E3A34] font-serif">Edit Profile Details</h3>
                 
                 {profileMsg.text && (
-                  <div className={`p-3 rounded-xl text-xs flex items-center gap-2 ${
-                    profileMsg.type === 'success' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
+                  <div className={`p-3 rounded-lg text-xs flex items-center gap-2 ${
+                    profileMsg.type === 'success' ? 'bg-[#4F7A5A]/10 text-[#4F7A5A] border border-[#4F7A5A]/30' : 'bg-[#A63D2F]/10 text-[#A63D2F] border border-[#A63D2F]/30'
                   }`}>
                     <CheckCircle2 className="w-4 h-4 shrink-0" />
                     <span>{profileMsg.text}</span>
@@ -688,7 +688,7 @@ export default function AccountModal({ isOpen, onClose, initialTab = 'orders' })
 
                 {/* Avatar Presets Selection */}
                 <div>
-                  <label className="text-xs font-bold text-[#786E6E] block mb-2 font-giliran uppercase tracking-wider">Choose Avatar (10 Presets)</label>
+                  <label className="text-xs font-bold text-[#1E3A34] block mb-2 uppercase tracking-wider">Choose Avatar (10 Presets)</label>
                   <div className="grid grid-cols-5 gap-3">
                     {AVATAR_PRESETS.map((av, idx) => (
                       <img
@@ -697,7 +697,7 @@ export default function AccountModal({ isOpen, onClose, initialTab = 'orders' })
                         alt={`Avatar ${idx + 1}`}
                         onClick={() => setProfileForm({ ...profileForm, avatar: av })}
                         className={`w-12 h-12 rounded-full object-cover cursor-pointer transition-all border-2 ${
-                          profileForm.avatar === av ? 'border-[#FF9E00] ring-2 ring-[#FF9E00]/50 scale-105' : 'border-transparent opacity-60 hover:opacity-100'
+                          profileForm.avatar === av ? 'border-[#B8935A] ring-2 ring-[#B8935A]/40 scale-105' : 'border-transparent opacity-60 hover:opacity-100'
                         }`}
                       />
                     ))}
@@ -705,23 +705,23 @@ export default function AccountModal({ isOpen, onClose, initialTab = 'orders' })
                 </div>
 
                 <div>
-                  <label className="text-xs font-bold text-[#786E6E] block mb-1">Full Name</label>
+                  <label className="text-xs font-bold text-[#1E3A34] block mb-1">Full Name</label>
                   <input
                     type="text"
                     required
                     value={profileForm.name}
                     onChange={e => setProfileForm({ ...profileForm, name: e.target.value })}
-                    className="w-full bg-[#1A1010] border border-[#F8F6F6]/10 rounded-xl px-3.5 py-2.5 text-xs text-[#F8F6F6] focus:outline-none focus:border-[#FF9E00]"
+                    className="w-full bg-[#FFFFFF] border border-[#E7DFD2] rounded-lg px-3.5 py-2.5 text-xs text-[#1F2421] focus:outline-none focus:border-[#1E3A34]"
                   />
                 </div>
 
                 <div>
-                  <label className="text-xs font-bold text-[#786E6E] block mb-1">Phone Number</label>
+                  <label className="text-xs font-bold text-[#1E3A34] block mb-1">Phone Number</label>
                   <input
                     type="tel"
                     value={profileForm.phone}
                     onChange={e => setProfileForm({ ...profileForm, phone: e.target.value })}
-                    className="w-full bg-[#1A1010] border border-[#F8F6F6]/10 rounded-xl px-3.5 py-2.5 text-xs text-[#F8F6F6] focus:outline-none focus:border-[#FF9E00]"
+                    className="w-full bg-[#FFFFFF] border border-[#E7DFD2] rounded-lg px-3.5 py-2.5 text-xs text-[#1F2421] focus:outline-none focus:border-[#1E3A34]"
                   />
                 </div>
 
@@ -729,13 +729,13 @@ export default function AccountModal({ isOpen, onClose, initialTab = 'orders' })
                   <button
                     type="button"
                     onClick={logout}
-                    className="text-xs font-bold text-rose-400 hover:text-rose-300 py-2 px-3 rounded-xl hover:bg-rose-500/10 transition-colors cursor-pointer"
+                    className="text-xs font-bold text-[#A63D2F] hover:bg-[#A63D2F]/10 py-2 px-3 rounded-lg border border-[#A63D2F]/30 transition-colors cursor-pointer"
                   >
                     Log Out
                   </button>
                   <button
                     type="submit"
-                    className="btn-theme-primary py-2.5 px-6 rounded-xl font-bold text-xs shadow-lg cursor-pointer"
+                    className="btn-cta py-2.5 px-6 rounded-lg font-bold text-xs shadow-md cursor-pointer"
                   >
                     Save Changes
                   </button>
@@ -749,54 +749,54 @@ export default function AccountModal({ isOpen, onClose, initialTab = 'orders' })
 
     {/* TOP-LEVEL SUB-MODAL: Edit Shipping Address for specific Order */}
     {orderAddressToEdit && (
-      <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#0D0606]/90 backdrop-blur-md">
-        <div className="relative z-[101] w-full max-w-md bg-[#140B0B] border border-[#FF9E00]/30 rounded-3xl p-6 space-y-4 shadow-2xl">
-          <div className="flex items-center justify-between pb-2 border-b border-[#F8F6F6]/10">
-            <h4 className="text-sm font-bold text-[#F8F6F6] font-giliran">Update Destination for {orderAddressToEdit.orderNo}</h4>
-            <button onClick={() => setOrderAddressToEdit(null)} className="text-[#786E6E] hover:text-[#F8F6F6]">
+      <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#0D0606]/65 backdrop-blur-sm">
+        <div className="relative z-[101] w-full max-w-md bg-[#FFFFFF] border border-[#E7DFD2] rounded-2xl p-6 space-y-4 shadow-2xl text-[#1F2421]">
+          <div className="flex items-center justify-between pb-2 border-b border-[#E7DFD2]">
+            <h4 className="text-sm font-bold text-[#1E3A34] font-serif">Update Destination for {orderAddressToEdit.orderNo}</h4>
+            <button onClick={() => setOrderAddressToEdit(null)} className="text-[#6B665E] hover:text-[#1E3A34]">
               <X className="w-4 h-4" />
             </button>
           </div>
-          <form onSubmit={handleSaveOrderAddress} className="space-y-3 text-xs font-poppins">
+          <form onSubmit={handleSaveOrderAddress} className="space-y-3 text-xs font-sans">
             <div>
-              <label className="text-[#786E6E] block mb-1">Recipient Name</label>
+              <label className="text-[#6B665E] block mb-1">Recipient Name</label>
               <input
                 type="text"
                 required
                 value={addressForm.fullName}
                 onChange={e => setAddressForm({ ...addressForm, fullName: e.target.value })}
-                className="w-full bg-[#1A1010] border border-[#F8F6F6]/10 rounded-xl px-3 py-2 text-[#F8F6F6]"
+                className="w-full bg-[#FAF6EF] border border-[#E7DFD2] rounded-lg px-3 py-2 text-[#1F2421] focus:outline-none focus:border-[#1E3A34]"
               />
             </div>
             <div>
-              <label className="text-[#786E6E] block mb-1">Address</label>
+              <label className="text-[#6B665E] block mb-1">Address</label>
               <input
                 type="text"
                 required
                 value={addressForm.line1}
                 onChange={e => setAddressForm({ ...addressForm, line1: e.target.value })}
-                className="w-full bg-[#1A1010] border border-[#F8F6F6]/10 rounded-xl px-3 py-2 text-[#F8F6F6]"
+                className="w-full bg-[#FAF6EF] border border-[#E7DFD2] rounded-lg px-3 py-2 text-[#1F2421] focus:outline-none focus:border-[#1E3A34]"
               />
             </div>
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className="text-[#786E6E] block mb-1">City</label>
+                <label className="text-[#6B665E] block mb-1">City</label>
                 <input
                   type="text"
                   required
                   value={addressForm.city}
                   onChange={e => setAddressForm({ ...addressForm, city: e.target.value })}
-                  className="w-full bg-[#1A1010] border border-[#F8F6F6]/10 rounded-xl px-3 py-2 text-[#F8F6F6]"
+                  className="w-full bg-[#FAF6EF] border border-[#E7DFD2] rounded-lg px-3 py-2 text-[#1F2421] focus:outline-none focus:border-[#1E3A34]"
                 />
               </div>
               <div>
-                <label className="text-[#786E6E] block mb-1">PIN Code (Default 560035)</label>
+                <label className="text-[#6B665E] block mb-1">PIN Code (Default 560035)</label>
                 <input
                   type="text"
                   required
                   value={addressForm.pincode}
                   onChange={e => setAddressForm({ ...addressForm, pincode: e.target.value })}
-                  className="w-full bg-[#1A1010] border border-[#F8F6F6]/10 rounded-xl px-3 py-2 text-[#F8F6F6] font-mono"
+                  className="w-full bg-[#FAF6EF] border border-[#E7DFD2] rounded-lg px-3 py-2 text-[#1F2421] font-mono focus:outline-none focus:border-[#1E3A34]"
                 />
               </div>
             </div>
@@ -804,13 +804,13 @@ export default function AccountModal({ isOpen, onClose, initialTab = 'orders' })
               <button
                 type="button"
                 onClick={() => setOrderAddressToEdit(null)}
-                className="px-3 py-1.5 rounded-xl text-[#786E6E] hover:text-[#F8F6F6]"
+                className="btn-secondary px-3 py-1.5 rounded-lg text-xs"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="btn-theme-primary px-4 py-1.5 rounded-xl font-bold"
+                className="btn-cta px-4 py-1.5 rounded-lg font-bold text-xs"
               >
                 Update Address
               </button>
@@ -822,21 +822,21 @@ export default function AccountModal({ isOpen, onClose, initialTab = 'orders' })
 
     {/* TOP-LEVEL SUB-MODAL: Cancel Order Reason Prompt */}
     {orderToCancel && (
-      <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#0D0606]/90 backdrop-blur-md">
-        <div className="relative z-[101] w-full max-w-md bg-[#140B0B] border border-rose-500/40 rounded-3xl p-6 space-y-4 shadow-2xl">
-          <div className="flex items-center gap-3 text-rose-400 pb-2 border-b border-[#F8F6F6]/10">
+      <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#0D0606]/65 backdrop-blur-sm">
+        <div className="relative z-[101] w-full max-w-md bg-[#FFFFFF] border border-[#A63D2F]/40 rounded-2xl p-6 space-y-4 shadow-2xl text-[#1F2421]">
+          <div className="flex items-center gap-3 text-[#A63D2F] pb-2 border-b border-[#E7DFD2]">
             <AlertCircle className="w-5 h-5 shrink-0" />
-            <h4 className="text-sm font-bold text-[#F8F6F6] font-giliran">Cancel Order #{orderToCancel.orderNo}</h4>
+            <h4 className="text-sm font-bold text-[#1E3A34] font-serif">Cancel Order #{orderToCancel.orderNo}</h4>
           </div>
-          <p className="text-xs text-[#B8B0B0]">
+          <p className="text-xs text-[#6B665E]">
             Are you sure you want to cancel this order? If paid online, your refund will be processed within 3-5 business days.
           </p>
           <div className="space-y-1.5 text-xs">
-            <label className="font-bold text-[#786E6E]">Select Reason</label>
+            <label className="font-bold text-[#6B665E]">Select Reason</label>
             <select
               value={cancelReason}
               onChange={e => setCancelReason(e.target.value)}
-              className="w-full bg-[#1A1010] border border-[#F8F6F6]/10 rounded-xl px-3 py-2 text-xs text-[#F8F6F6]"
+              className="w-full bg-[#FAF6EF] border border-[#E7DFD2] rounded-lg px-3 py-2 text-xs text-[#1F2421] focus:outline-none focus:border-[#1E3A34]"
             >
               <option value="Found a better price elsewhere">Found a better price elsewhere</option>
               <option value="Expected delivery time is too long">Expected delivery time is too long</option>
@@ -848,14 +848,14 @@ export default function AccountModal({ isOpen, onClose, initialTab = 'orders' })
             <button
               type="button"
               onClick={() => setOrderToCancel(null)}
-              className="px-3 py-1.5 rounded-xl text-xs text-[#786E6E] hover:text-[#F8F6F6]"
+              className="btn-secondary px-3 py-1.5 rounded-lg text-xs"
             >
               Keep Order
             </button>
             <button
               type="button"
               onClick={handleConfirmCancelOrder}
-              className="px-4 py-1.5 rounded-xl text-xs bg-rose-600 hover:bg-rose-500 font-bold text-white shadow-lg shadow-rose-600/30 cursor-pointer"
+              className="px-4 py-1.5 rounded-lg text-xs bg-[#A63D2F] hover:bg-[#8D3427] font-bold text-white shadow-md cursor-pointer"
             >
               Confirm Cancellation
             </button>

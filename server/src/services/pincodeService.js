@@ -1,5 +1,6 @@
 // Pincode Delivery Intelligence Service
 // Defaults: 560035 (Customer default) & 560001 (Warehouse hub)
+import { StoreSettings } from '../models/StoreSettings.js';
 
 const PINCODE_DATABASE = {
   // Karnataka (Hub & Local)
@@ -36,7 +37,7 @@ function calculateHaversineDistance(lat1, lon1, lat2, lon2) {
   return Math.round(R * c * 10) / 10;
 }
 
-export function estimateDelivery(pincode, subtotal = 0) {
+export function estimateDelivery(pincode, subtotal = 0, storeSettings = null) {
   const cleanPin = String(pincode || '560035').trim();
   const originHub = PINCODE_DATABASE['560001'];
   
@@ -66,6 +67,10 @@ export function estimateDelivery(pincode, subtotal = 0) {
     }
   }
 
+  // Dynamic store settings integration (P1-4)
+  const freeThreshold = storeSettings?.freeShippingMinAmount !== undefined ? Number(storeSettings.freeShippingMinAmount) : 499;
+  const configuredFee = storeSettings?.shippingFee !== undefined ? Number(storeSettings.shippingFee) : 40;
+
   // Delivery estimation logic
   let estimatedDays = 1;
   let shippingFee = 0;
@@ -81,13 +86,13 @@ export function estimateDelivery(pincode, subtotal = 0) {
   } else if (distanceKm <= 350) {
     // Regional zone
     estimatedDays = 2;
-    shippingFee = subtotal >= 499 ? 0 : 40;
+    shippingFee = subtotal >= freeThreshold ? 0 : configuredFee;
     const arrivalDate = new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000);
     deliveryFormatted = `In 2 Days (${arrivalDate.toLocaleDateString('en-IN', { weekday: 'short', month: 'short', day: 'numeric' })})`;
   } else {
     // National express
     estimatedDays = Math.min(6, 3 + Math.ceil(distanceKm / 500));
-    shippingFee = subtotal >= 999 ? 0 : 70;
+    shippingFee = subtotal >= freeThreshold ? 0 : (configuredFee + 20);
     const arrivalDate = new Date(now.getTime() + estimatedDays * 24 * 60 * 60 * 1000);
     deliveryFormatted = `In ${estimatedDays} Days (${arrivalDate.toLocaleDateString('en-IN', { weekday: 'short', month: 'short', day: 'numeric' })})`;
   }
@@ -104,4 +109,13 @@ export function estimateDelivery(pincode, subtotal = 0) {
     isCodAvailable: true,
     originHub: '560001 (Bengaluru Central GPO)'
   };
+}
+
+export async function estimateDeliveryAsync(pincode, subtotal = 0) {
+  try {
+    const settings = await StoreSettings.findOne();
+    return estimateDelivery(pincode, subtotal, settings);
+  } catch (err) {
+    return estimateDelivery(pincode, subtotal);
+  }
 }

@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "E-Shop Full-Stack E-Commerce Application",
   "scripts": {
+    "dev": "concurrently -n \"SERVER,CLIENT\" -c \"blue,green\" \"npm run server\" \"npm run client\"",
     "install:server": "cd server && npm install",
     "install:client": "cd client && npm install --include=dev",
     "install:all": "npm run install:server && npm run install:client",
@@ -10,9 +11,19 @@
     "seed": "cd server && npm run seed",
     "server": "cd server && npm run dev",
     "client": "cd client && npm run dev",
+    "test": "cd server && npm test",
     "start": "node server/src/server.js"
   },
-  "keywords": ["ecommerce", "eshop", "react", "express", "mongodb"],
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  },
+  "keywords": [
+    "ecommerce",
+    "eshop",
+    "react",
+    "express",
+    "mongodb"
+  ],
   "author": "E-Shop Team",
   "license": "ISC"
 }

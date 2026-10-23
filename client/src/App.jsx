@@ -200,24 +200,24 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0D0606] text-[#F8F6F6] flex flex-col selection:bg-[#FF9E00] selection:text-[#0D0606] relative font-poppins">
+    <div className="min-h-screen bg-[#FAF6EF] text-[#1F2421] flex flex-col selection:bg-[#C2603F] selection:text-white relative font-sans">
       
-      {/* Real-time Broadcast Toast in Luxury Amber Style */}
+      {/* Real-time Broadcast Toast in Classic Forest Green & Gold Style */}
       {toastNotification && (
-        <div className="fixed top-24 right-5 z-50 max-w-sm bg-[#140B0B] border border-[#FF9E00]/40 p-4 rounded-2xl shadow-2xl animate-slide-left flex items-start gap-3">
-          <div className="p-2 rounded-xl bg-[#FF9E00]/15 text-[#FF9E00] shrink-0 font-bold">
-            <Flame className="w-5 h-5 fill-[#FF9E00]" />
+        <div className="fixed top-24 right-5 z-50 max-w-sm bg-[#1E3A34] border border-[#B8935A]/50 text-[#FAF6EF] p-4 rounded-[6px] shadow-classic animate-slide-left flex items-start gap-3">
+          <div className="p-2 rounded-[6px] bg-[#C2603F]/20 text-[#C2603F] shrink-0 font-bold">
+            <Flame className="w-5 h-5 fill-[#C2603F]" />
           </div>
           <div className="flex-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-[#FF9E00] font-mono">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[#B8935A] font-sans">
               {toastNotification.dealTag || '⚡ FLASH BROADCAST'}
             </span>
-            <h5 className="text-xs font-bold text-[#F8F6F6] mt-0.5 font-giliran">{toastNotification.title}</h5>
-            <p className="text-[11px] text-[#B8B0B0] mt-1 line-clamp-2">{toastNotification.message}</p>
+            <h5 className="text-xs font-bold text-[#FAF6EF] mt-0.5 font-serif">{toastNotification.title}</h5>
+            <p className="text-[11px] text-[#FAF6EF]/80 mt-1 line-clamp-2">{toastNotification.message}</p>
           </div>
           <button
             onClick={() => setToastNotification(null)}
-            className="text-[#786E6E] hover:text-[#F8F6F6] p-1 cursor-pointer"
+            className="text-[#FAF6EF]/60 hover:text-white p-1 cursor-pointer transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -268,25 +268,25 @@ export default function App() {
       <section id="catalog-section" className="w-full max-w-[1536px] mx-auto px-4 sm:px-6 lg:px-10 mt-10 mb-20 flex-1 scroll-mt-28">
         
         {/* Active Filter Indicator Bar & Mobile Toggle */}
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-6 pb-4 border-b border-[#F8F6F6]/10">
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-6 pb-4 border-b border-[#E7DFD2]">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setIsMobileFiltersOpen(true)}
-              className="lg:hidden flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#140B0B] border border-[#F8F6F6]/10 text-xs font-bold text-[#F8F6F6]"
+              className="lg:hidden flex items-center gap-2 px-3.5 py-2 rounded-[6px] bg-[#FFFFFF] border border-[#E7DFD2] text-xs font-bold text-[#1F2421] shadow-sm cursor-pointer"
             >
-              <SlidersHorizontal className="w-4 h-4 text-[#FF9E00]" />
+              <SlidersHorizontal className="w-4 h-4 text-[#1E3A34]" />
               <span>Filters</span>
             </button>
 
             <div>
-              <h2 className="text-xl sm:text-2xl font-black text-[#F8F6F6] font-giliran flex items-center gap-2.5">
+              <h2 className="text-xl sm:text-2xl font-bold text-[#1E3A34] font-serif flex items-center gap-2.5">
                 <span>{selectedCategory ? `${selectedCategory.toUpperCase()} COLLECTION` : 'HAUTE CATALOG'}</span>
-                <span className="text-xs font-mono font-bold text-[#FF9E00] bg-[#FF9E00]/10 border border-[#FF9E00]/25 px-2.5 py-0.5 rounded-full">
+                <span className="text-xs font-sans font-bold text-[#1E3A34] bg-[#FAF6EF] border border-[#B8935A]/40 px-2.5 py-0.5 rounded-[4px] tabular-nums">
                   {totalProducts} items
                 </span>
               </h2>
               {searchQuery && (
-                <p className="text-xs text-[#FF9E00] mt-0.5">
+                <p className="text-xs text-[#C2603F] mt-0.5">
                   Filtered query: &ldquo;{searchQuery}&rdquo;
                 </p>
               )}
@@ -298,13 +298,13 @@ export default function App() {
             {wishlistIds.length > 0 && (
               <button
                 onClick={() => setShowWishlistOnly(!showWishlistOnly)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border transition-all cursor-pointer ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-[6px] border transition-all cursor-pointer ${
                   showWishlistOnly
-                    ? 'bg-[#FF9E00] text-[#0D0606] font-bold border-[#FF9E00]'
-                    : 'bg-[#140B0B] text-[#B8B0B0] border-[#F8F6F6]/10 hover:text-[#F8F6F6]'
+                    ? 'bg-[#1E3A34] text-[#FAF6EF] font-bold border-[#1E3A34]'
+                    : 'bg-[#FFFFFF] text-[#6B665E] border-[#E7DFD2] hover:text-[#1F2421] hover:border-[#B8935A]'
                 }`}
               >
-                <Heart className={`w-3.5 h-3.5 ${showWishlistOnly ? 'fill-[#0D0606]' : ''}`} />
+                <Heart className={`w-3.5 h-3.5 ${showWishlistOnly ? 'fill-[#FAF6EF]' : ''}`} />
                 <span>Wishlist ({wishlistIds.length})</span>
               </button>
             )}
@@ -312,7 +312,7 @@ export default function App() {
             {(selectedCategory || searchQuery || minDiscount > 0 || minRating > 0 || inStockOnly || showWishlistOnly) && (
               <button
                 onClick={handleResetFilters}
-                className="flex items-center gap-1 text-[#786E6E] hover:text-[#F8F6F6] px-2.5 py-1.5 rounded-xl bg-[#140B0B] border border-[#F8F6F6]/10 cursor-pointer"
+                className="flex items-center gap-1 text-[#6B665E] hover:text-[#1F2421] px-2.5 py-1.5 rounded-[6px] bg-[#FFFFFF] border border-[#E7DFD2] hover:border-[#B8935A] cursor-pointer transition-colors"
               >
                 <X className="w-3.5 h-3.5" />
                 <span>Reset Filters</span>
@@ -348,19 +348,19 @@ export default function App() {
             {loadingProducts ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
                 {Array.from({ length: 6 }).map((_, i) => (
-                  <div key={i} className="h-96 rounded-3xl skeleton" />
+                  <div key={i} className="h-96 rounded-[6px] skeleton" />
                 ))}
               </div>
             ) : products.length === 0 ? (
-              <div className="text-center py-24 bg-[#140B0B] rounded-3xl border border-[#F8F6F6]/10">
-                <ShoppingBag className="w-12 h-12 text-[#786E6E] mx-auto mb-3" />
-                <h3 className="text-base font-bold text-[#F8F6F6] font-giliran">No products match your criteria</h3>
-                <p className="text-xs text-[#786E6E] mt-1 max-w-sm mx-auto font-poppins">
+              <div className="text-center py-24 bg-[#FFFFFF] rounded-[6px] border border-[#E7DFD2] shadow-sm">
+                <ShoppingBag className="w-12 h-12 text-[#6B665E] mx-auto mb-3" />
+                <h3 className="text-base font-bold text-[#1E3A34] font-serif">No products match your criteria</h3>
+                <p className="text-xs text-[#6B665E] mt-1 max-w-sm mx-auto font-sans">
                   Try broadening your price range or clearing department filters to discover more items.
                 </p>
                 <button
                   onClick={handleResetFilters}
-                  className="mt-4 px-4 py-2 rounded-xl btn-theme-primary text-xs font-bold cursor-pointer"
+                  className="mt-4 px-4 py-2 rounded-[6px] btn-cta text-xs font-bold cursor-pointer"
                 >
                   Reset All Filters
                 </button>

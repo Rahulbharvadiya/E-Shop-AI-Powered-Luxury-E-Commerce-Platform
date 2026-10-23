@@ -6,6 +6,7 @@ import {
   getOrderById,
   updateOrderAddress,
   cancelOrder,
+  verifyPayment,
   downloadInvoice
 } from '../controllers/orderController.js';
 import { requireAuth, optionalAuth } from '../middleware/authMiddleware.js';
@@ -20,6 +21,7 @@ router.post('/orders/checkout', requireAuth, checkout);
 router.get('/orders', requireAuth, getMyOrders);
 router.get('/orders/my-orders', requireAuth, getMyOrders);
 router.get('/orders/:id', requireAuth, getOrderById);
+router.post('/orders/:id/verify-payment', requireAuth, verifyPayment);
 router.put('/orders/:id/address', requireAuth, updateOrderAddress);
 router.post('/orders/:id/cancel', requireAuth, cancelOrder);
 router.put('/orders/:id/cancel', requireAuth, cancelOrder);

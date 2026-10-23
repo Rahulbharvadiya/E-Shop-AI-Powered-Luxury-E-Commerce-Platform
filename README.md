@@ -117,16 +117,32 @@ This application is built with a modern, high-performance tech stack combining r
 
 ---
 
-## 🔑 Test Credentials
+## 🛡️ Hardened Production Architecture & Security Standards
 
-You can use these pre-seeded accounts to test the live platform immediately:
+The platform has been engineered and audited to senior engineering standards with comprehensive protection across data integrity, abuse prevention, and session security:
+
+- **Abuse & Rate Limiting Defense**: Powered by `helmet`, `express-rate-limit`, and `express-mongo-sanitize` across auth, OTP, and AI endpoints.
+- **Atomic Stock Management**: Zero overselling guaranteed via conditional `$gte` updates and automatic rollback compensation on concurrent cart checkouts.
+- **Robust Order State Machine**: Deterministic status lifecycles (`ORDER_PLACED` → `CONFIRMED` → `SHIPPED` → `OUT_FOR_DELIVERY` → `DELIVERED`), with automatic inventory replenishment on cancellations.
+- **Dynamic Delivery Intelligence**: Seamlessly recalculates transit fees and delivery ETAs directly from `StoreSettings` and updates upon customer address changes.
+- **Dual-Token Session Security**: Short-lived 15-minute JWT Access Tokens paired with rotating 7-day Refresh Tokens in secure httpOnly cookies, featuring instant versioned revocation.
+- **Monotonic Sequence Numbering**: Collision-free order (`ORD-YYYYMMDD-XXXXX`) and tax invoice (`ESH-YYYY-XXXXXX`) numbering powered by atomic MongoDB sequence counters.
+- **Automated Test Coverage**: Built-in test suite verifying auth gates, catalog search, coupon caps, isolated guest chat sessions, and delivery calculation.
+
+---
+
+## 🔑 Accessing the Platform
+
+### Demo Test Accounts
 
 | Role | Login Identifier | Password | Access Privileges |
 | :--- | :--- | :--- | :--- |
 | **Store Admin** | `admin` | `Password` | Full Admin Operations Console, Product CRUD, Live Deal Dispatcher, Store Settings |
 | **Customer** | `customer` | `Customerpassword` | Retail Shopping, AI Concierge, Cart & Checkout, Order Tracking, PDF Invoices |
 
-*(Or click **"Register New Account"** on the live site to create your own personal account!)*
+### Creating an Account
+- Click **"Register"** in the top navigation bar to create your own customer account with full name, username, phone, email, and password.
+- Administrators can set initial administrative credentials securely via server environment variables (`ADMIN_EMAIL` and `ADMIN_PASSWORD`) before executing `npm run seed`.
 
 ---
 
@@ -142,11 +158,12 @@ cd Eshop
 
 ### 2. Install Dependencies
 ```bash
-# Installs both root, server, and client dependencies
+# Installs root, server, and client dependencies
 npm run install:all
 ```
 
 ### 3. Configure Environment Variables
+<<<<<<< HEAD
 Create a `.env` file in the `server/` directory:
 ```env
 PORT=5000
@@ -157,20 +174,32 @@ JWT_ACCESS_SECRET=your_jwt_secret_key_here
 JWT_REFRESH_SECRET=your_refresh_secret_key_here
 ADMIN_EMAIL=admin
 ADMIN_PASSWORD=Password
+=======
+Copy the template in `server/.env.example` to `server/.env`:
+```bash
+cp server/.env.example server/.env
+>>>>>>> 70a0fc5 (feat: complete classic luxury redesign, security hardening, and automated test suite)
 ```
+Ensure `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`, and `MONGODB_URI` are configured with your secrets.
 
-### 4. Seed Cloud Database (Optional)
+### 4. Seed Database (Optional)
 ```bash
 npm run seed
 ```
 
-### 5. Launch the Application
+### 5. Run Automated Tests
 ```bash
-# Starts both frontend and backend concurrently
+npm test
+```
+
+### 6. Launch the Application
+```bash
+# Starts both frontend (Vite) and backend (Express) concurrently
 npm run dev
 ```
 - **Client**: `http://localhost:5173`
 - **API Server**: `http://localhost:5000`
+- **Health Check**: `http://localhost:5000/api/health`
 
 ---
 

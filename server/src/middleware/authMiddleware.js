@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { User } from '../models/User.js';
+import { env } from '../config/env.js';
 
 export const requireAuth = async (req, res, next) => {
   try {
@@ -15,8 +16,7 @@ export const requireAuth = async (req, res, next) => {
       return res.status(401).json({ success: false, message: 'Authentication required. Please login.' });
     }
 
-    const secret = process.env.JWT_ACCESS_SECRET || 'eshop_access_secret_super_secure_key_12345_jwt';
-    const decoded = jwt.verify(token, secret);
+    const decoded = jwt.verify(token, env.JWT_ACCESS_SECRET);
 
     const user = await User.findById(decoded.id).select('-passwordHash');
     if (!user || user.status === 'deleted') {
@@ -26,7 +26,10 @@ export const requireAuth = async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
-    return res.status(401).json({ success: false, message: 'Invalid or expired session token. Please login again.' });
+    return res.status(401).json({
+      success: false,
+      message: 'Invalid or expired session token. Please login again.'
+    });
   }
 };
 
@@ -40,8 +43,7 @@ export const optionalAuth = async (req, res, next) => {
     }
 
     if (token) {
-      const secret = process.env.JWT_ACCESS_SECRET || 'eshop_access_secret_super_secure_key_12345_jwt';
-      const decoded = jwt.verify(token, secret);
+      const decoded = jwt.verify(token, env.JWT_ACCESS_SECRET);
       const user = await User.findById(decoded.id).select('-passwordHash');
       if (user && user.status === 'active') {
         req.user = user;

@@ -19,5 +19,6 @@ const chatMessageSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 chatMessageSchema.index({ userId: 1, sessionId: 1, createdAt: 1 });
+chatMessageSchema.index({ createdAt: 1 }, { expireAfterSeconds: 86400, partialFilterExpression: { userId: null } });
 
 export const ChatMessage = mongoose.model('ChatMessage', chatMessageSchema);

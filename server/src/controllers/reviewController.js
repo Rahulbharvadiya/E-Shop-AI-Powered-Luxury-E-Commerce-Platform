@@ -1,24 +1,41 @@
+import mongoose from 'mongoose';
 import { Review } from '../models/Review.js';
 import { Order } from '../models/Order.js';
 import { Product } from '../models/Product.js';
 
-// 1. Get Reviews for Product
+// 1. Get Reviews for Product with Pagination (P2-6)
 export async function getProductReviews(req, res) {
   try {
     const { productId } = req.params;
-    const reviews = await Review.find({ productId }).sort({ createdAt: -1 });
+    const { page = 1, limit = 10 } = req.query;
 
-    const total = reviews.length;
-    let average = 0;
-    const distribution = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
-
-    if (total > 0) {
-      const sum = reviews.reduce((acc, r) => {
-        distribution[r.rating] = (distribution[r.rating] || 0) + 1;
-        return acc + r.rating;
-      }, 0);
-      average = Math.round((sum / total) * 10) / 10;
+    if (!mongoose.isValidObjectId(productId)) {
+      return res.status(400).json({ success: false, message: 'Invalid product ID.' });
     }
+
+    const pageNum = Math.max(1, Number(page) || 1);
+    const limitNum = Math.min(50, Math.max(1, Number(limit) || 10));
+
+    const total = await Review.countDocuments({ productId });
+    const reviews = await Review.find({ productId })
+      .sort({ createdAt: -1 })
+      .skip((pageNum - 1) * limitNum)
+      .limit(limitNum);
+
+    // Distribution aggregation
+    const distributionAgg = await Review.aggregate([
+      { $match: { productId: new mongoose.Types.ObjectId(productId) } },
+      { $group: { _id: '$rating', count: { $sum: 1 } } }
+    ]);
+
+    const distribution = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+    let sum = 0;
+    distributionAgg.forEach(item => {
+      distribution[item._id] = item.count;
+      sum += item._id * item.count;
+    });
+
+    const average = total > 0 ? Math.round((sum / total) * 10) / 10 : 5.0;
 
     return res.status(200).json({
       success: true,
@@ -27,6 +44,12 @@ export async function getProductReviews(req, res) {
         total,
         average,
         distribution
+      },
+      pagination: {
+        total,
+        page: pageNum,
+        limit: limitNum,
+        totalPages: Math.ceil(total / limitNum)
       }
     });
   } catch (error) {
@@ -40,8 +63,17 @@ export async function createReview(req, res) {
     const { productId, rating, title, comment } = req.body;
     const userId = req.user._id;
 
-    if (!productId || !rating || !title || !comment) {
-      return res.status(400).json({ success: false, message: 'Rating, title, and comment are required.' });
+    if (!mongoose.isValidObjectId(productId)) {
+      return res.status(400).json({ success: false, message: 'Invalid product ID.' });
+    }
+
+    const numRating = Number(rating);
+    if (!numRating || numRating < 1 || numRating > 5) {
+      return res.status(400).json({ success: false, message: 'Rating must be an integer between 1 and 5.' });
+    }
+
+    if (!title || !comment) {
+      return res.status(400).json({ success: false, message: 'Review title and comment are required.' });
     }
 
     // STRICT VERIFICATION CHECK:
@@ -55,7 +87,7 @@ export async function createReview(req, res) {
     if (!verifiedOrder) {
       return res.status(403).json({
         success: false,
-        message: 'Only verified purchasers who have received this product can write a review.'
+        message: 'Only verified purchasers who have received delivery of this product can write a review.'
       });
     }
 
@@ -70,20 +102,25 @@ export async function createReview(req, res) {
       userId,
       userName: req.user.name,
       userAvatar: req.user.avatar,
-      rating: Number(rating),
-      title: title.trim(),
-      comment: comment.trim(),
+      rating: numRating,
+      title: String(title).trim(),
+      comment: String(comment).trim(),
       isVerifiedPurchase: true
     });
 
-    // Recalculate product rating average
-    const allReviews = await Review.find({ productId });
-    const newAverage = allReviews.reduce((sum, r) => sum + r.rating, 0) / allReviews.length;
+    // Efficiently recalculate product rating average
+    const stats = await Review.aggregate([
+      { $match: { productId: new mongoose.Types.ObjectId(productId) } },
+      { $group: { _id: null, avg: { $sum: '$rating' }, count: { $sum: 1 } } }
+    ]);
 
-    await Product.findByIdAndUpdate(productId, {
-      ratingAverage: Math.round(newAverage * 10) / 10,
-      reviewCount: allReviews.length
-    });
+    if (stats.length > 0) {
+      const avg = Math.round((stats[0].avg / stats[0].count) * 10) / 10;
+      await Product.findByIdAndUpdate(productId, {
+        ratingAverage: avg,
+        reviewCount: stats[0].count
+      });
+    }
 
     // Real-time broadcast if socket.io is active
     const io = req.app.get('io');

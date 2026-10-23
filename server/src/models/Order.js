@@ -36,6 +36,10 @@ const orderSchema = new mongoose.Schema({
     total: { type: Number, required: true }
   },
   couponCode: { type: String },
+  idempotencyKey: { type: String, sparse: true, index: true },
+  paymentGatewayOrderId: { type: String },
+  paymentGatewayPaymentId: { type: String },
+  paymentGatewaySignature: { type: String },
   paymentMethod: {
     type: String,
     enum: ['UPI', 'CARD', 'NETBANKING', 'COD'],
@@ -43,7 +47,7 @@ const orderSchema = new mongoose.Schema({
   },
   paymentStatus: {
     type: String,
-    enum: ['PENDING', 'PAID', 'FAILED'],
+    enum: ['PENDING', 'PAID', 'FAILED', 'REFUNDED'],
     default: 'PENDING'
   },
   orderStatus: {

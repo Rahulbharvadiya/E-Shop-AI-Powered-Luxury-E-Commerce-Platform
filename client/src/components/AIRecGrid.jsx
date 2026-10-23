@@ -19,21 +19,21 @@ export default function AIRecGrid({ onOpenDetail }) {
   }, []);
 
   return (
-    <section className="w-full max-w-[1536px] mx-auto px-4 sm:px-6 lg:px-10 mt-16 mb-20 font-poppins">
+    <section className="w-full max-w-[1536px] mx-auto px-4 sm:px-6 lg:px-10 mt-16 mb-20 font-sans">
       
       {/* Section Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-8 pb-4 border-b border-[#F8F6F6]/10">
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-8 pb-4 border-b border-[#E7DFD2]">
         <div>
           <div className="flex items-center gap-2 mb-2">
             <span className="badge-ai">
-              <Bot className="w-3.5 h-3.5 text-[#FF9E00]" />
+              <Bot className="w-3.5 h-3.5 text-[#1E3A34]" />
               <span className="font-semibold">Personalized Affinity Engine</span>
             </span>
           </div>
-          <h3 className="text-2xl sm:text-3xl font-extrabold text-[#F8F6F6] font-giliran tracking-tight">
+          <h3 className="text-2xl sm:text-3xl font-bold text-[#1E3A34] font-serif tracking-tight section-title-accent">
             AI-Recommended Curations
           </h3>
-          <p className="text-xs sm:text-sm text-[#B8B0B0] mt-1 font-poppins">
+          <p className="text-xs sm:text-sm text-[#6B665E] mt-1 font-sans">
             12 hand-selected items matched to trending shopper affinity and verified buyer satisfaction
           </p>
         </div>
@@ -43,7 +43,7 @@ export default function AIRecGrid({ onOpenDetail }) {
       {loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
           {Array.from({ length: 12 }).map((_, i) => (
-            <div key={i} className="h-[450px] rounded-2xl skeleton" />
+            <div key={i} className="h-[450px] rounded-[6px] skeleton" />
           ))}
         </div>
       ) : (

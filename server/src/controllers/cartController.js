@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import { Cart } from '../models/Cart.js';
 import { Wishlist } from '../models/Wishlist.js';
 import { Product } from '../models/Product.js';
@@ -44,14 +45,27 @@ export async function getCart(req, res) {
   }
 }
 
-// 2. Add to Cart
+// 2. Add to Cart with Stock Check & Quantity Validation (P2-4)
 export async function addToCart(req, res) {
   try {
     const { productId, quantity = 1 } = req.body;
-    const product = await Product.findById(productId);
 
+    if (!mongoose.isValidObjectId(productId)) {
+      return res.status(400).json({ success: false, message: 'Invalid product ID.' });
+    }
+
+    const qty = parseInt(quantity, 10);
+    if (isNaN(qty) || qty <= 0) {
+      return res.status(400).json({ success: false, message: 'Quantity must be a positive integer.' });
+    }
+
+    const product = await Product.findById(productId);
     if (!product || !product.active) {
-      return res.status(404).json({ success: false, message: 'Product not available.' });
+      return res.status(404).json({ success: false, message: 'Product is no longer available.' });
+    }
+
+    if (product.stockQuantity <= 0) {
+      return res.status(400).json({ success: false, message: `'${product.name}' is currently out of stock.` });
     }
 
     let cart = await Cart.findOne({ userId: req.user._id });
@@ -60,10 +74,26 @@ export async function addToCart(req, res) {
     }
 
     const itemIndex = cart.items.findIndex(item => item.productId.toString() === productId);
+    let targetQty = qty;
+
     if (itemIndex > -1) {
-      cart.items[itemIndex].quantity = Math.min(10, cart.items[itemIndex].quantity + Number(quantity));
+      targetQty = cart.items[itemIndex].quantity + qty;
+    }
+
+    // Cap at 10 units per order and available stock
+    if (targetQty > product.stockQuantity) {
+      return res.status(400).json({
+        success: false,
+        message: `Only ${product.stockQuantity} units available for '${product.name}'.`
+      });
+    }
+
+    const finalQty = Math.min(10, targetQty);
+
+    if (itemIndex > -1) {
+      cart.items[itemIndex].quantity = finalQty;
     } else {
-      cart.items.push({ productId, quantity: Number(quantity) });
+      cart.items.push({ productId, quantity: finalQty });
     }
 
     await cart.save();
@@ -73,23 +103,44 @@ export async function addToCart(req, res) {
   }
 }
 
-// 3. Update Cart Item Quantity (+ / -)
+// 3. Update Cart Item Quantity (+ / -) with Stock Check (P2-4)
 export async function updateCartItem(req, res) {
   try {
     const { productId } = req.params;
     const { quantity } = req.body;
+
+    if (!mongoose.isValidObjectId(productId)) {
+      return res.status(400).json({ success: false, message: 'Invalid product ID.' });
+    }
+
+    const qty = parseInt(quantity, 10);
+    if (isNaN(qty)) {
+      return res.status(400).json({ success: false, message: 'Quantity must be a valid integer.' });
+    }
 
     const cart = await Cart.findOne({ userId: req.user._id });
     if (!cart) {
       return res.status(404).json({ success: false, message: 'Cart not found.' });
     }
 
-    if (Number(quantity) <= 0) {
+    if (qty <= 0) {
       cart.items = cart.items.filter(item => item.productId.toString() !== productId);
     } else {
+      const product = await Product.findById(productId);
+      if (!product || !product.active) {
+        return res.status(404).json({ success: false, message: 'Product is no longer available.' });
+      }
+
+      if (qty > product.stockQuantity) {
+        return res.status(400).json({
+          success: false,
+          message: `Only ${product.stockQuantity} units available for '${product.name}'.`
+        });
+      }
+
       const item = cart.items.find(item => item.productId.toString() === productId);
       if (item) {
-        item.quantity = Math.min(10, Number(quantity));
+        item.quantity = Math.min(10, qty);
       }
     }
 
@@ -117,40 +168,58 @@ export async function removeFromCart(req, res) {
   }
 }
 
-// 5. Wishlist: Get All
-export async function getWishlist(req, res) {
+// 5. Toggle Wishlist
+export async function toggleWishlist(req, res) {
   try {
-    let wishlist = await Wishlist.findOne({ userId: req.user._id }).populate('products');
-    if (!wishlist) {
-      wishlist = await Wishlist.create({ userId: req.user._id, products: [] });
+    const { productId } = req.body;
+
+    if (!mongoose.isValidObjectId(productId)) {
+      return res.status(400).json({ success: false, message: 'Invalid product ID.' });
     }
-    return res.status(200).json({ success: true, data: wishlist.products });
+
+    let wishlist = await Wishlist.findOne({ userId: req.user._id });
+    if (!wishlist) {
+      wishlist = await Wishlist.create({ userId: req.user._id, productIds: [] });
+    }
+
+    const existsIndex = wishlist.productIds.findIndex(id => id.toString() === productId);
+    let added = false;
+
+    if (existsIndex > -1) {
+      wishlist.productIds.splice(existsIndex, 1);
+      added = false;
+    } else {
+      wishlist.productIds.push(productId);
+      added = true;
+    }
+
+    await wishlist.save();
+
+    return res.status(200).json({
+      success: true,
+      message: added ? 'Added to wishlist!' : 'Removed from wishlist!',
+      data: {
+        wishlistIds: wishlist.productIds,
+        added
+      }
+    });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
 }
 
-// 6. Wishlist: Toggle Product
-export async function toggleWishlist(req, res) {
+// 6. Get Wishlist Products
+export async function getWishlist(req, res) {
   try {
-    const { productId } = req.body;
-    let wishlist = await Wishlist.findOne({ userId: req.user._id });
-    if (!wishlist) {
-      wishlist = await Wishlist.create({ userId: req.user._id, products: [] });
-    }
+    const wishlist = await Wishlist.findOne({ userId: req.user._id }).populate({
+      path: 'productIds',
+      match: { active: true }
+    });
 
-    const index = wishlist.products.findIndex(id => id.toString() === productId);
-    let added = false;
-
-    if (index > -1) {
-      wishlist.products.splice(index, 1);
-    } else {
-      wishlist.products.push(productId);
-      added = true;
-    }
-
-    await wishlist.save();
-    return res.status(200).json({ success: true, added, message: added ? 'Added to wishlist' : 'Removed from wishlist' });
+    return res.status(200).json({
+      success: true,
+      data: wishlist ? wishlist.productIds : []
+    });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }

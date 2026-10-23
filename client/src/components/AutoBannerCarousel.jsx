@@ -75,7 +75,7 @@ export default function AutoBannerCarousel({ onSelectCategory, onSelectProductSl
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
-      <div className="relative w-full h-72 sm:h-80 md:h-[390px] rounded-3xl overflow-hidden border border-[#F8F6F6]/10 shadow-2xl bg-[#140B0B] group">
+      <div className="relative w-full h-72 sm:h-80 md:h-[390px] rounded-[8px] overflow-hidden border border-[#B8935A]/30 shadow-classic bg-[#1E3A34] group">
         
         {/* Banner Background Image with Gradient Overlay */}
         <div className="absolute inset-0">
@@ -83,37 +83,37 @@ export default function AutoBannerCarousel({ onSelectCategory, onSelectProductSl
             src={currentBanner.imageUrl}
             alt={currentBanner.title}
             onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1200'; }}
-            className="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105 opacity-55"
+            className="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105 opacity-40"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0D0606] via-[#0D0606]/85 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#1E3A34] via-[#1E3A34]/90 to-transparent" />
         </div>
 
         {/* Banner Content Container */}
         <div className="relative z-10 h-full flex flex-col justify-center px-6 sm:px-12 md:px-16 max-w-2xl">
           
-          {/* Discount Badge */}
+          {/* Discount Badge in Brick Red */}
           <div className="inline-flex items-center gap-2 mb-3">
-            <span className="badge-theme-accent inline-flex items-center gap-1.5 text-[11px] font-black uppercase">
-              <Flame className="w-3.5 h-3.5 fill-[#0D0606]" />
+            <span className="badge-discount inline-flex items-center gap-1.5 text-[11px] font-bold uppercase rounded-[4px] px-2.5 py-1 bg-[#A63D2F] text-white">
+              <Flame className="w-3.5 h-3.5 fill-white text-white" />
               <span>{currentBanner.discountTag || currentBanner.discountText || 'LIMITED EXCLUSIVE DEAL'}</span>
             </span>
           </div>
 
-          {/* Heading in Giliran Luxury Serif */}
-          <h2 className="font-giliran text-2xl sm:text-4xl md:text-5xl font-black text-[#F8F6F6] leading-[1.1] mb-3">
+          {/* Heading in High-Contrast Playfair Serif */}
+          <h2 className="font-serif text-2xl sm:text-4xl md:text-5xl font-bold text-[#FAF6EF] leading-[1.1] mb-3">
             {currentBanner.title}
           </h2>
 
-          {/* Subtitle in Poppins */}
-          <p className="text-xs sm:text-sm text-[#B8B0B0] max-w-lg mb-6 line-clamp-2 font-poppins leading-relaxed">
+          {/* Subtitle in Clean Inter / DM Sans */}
+          <p className="text-xs sm:text-sm text-[#FAF6EF]/85 max-w-lg mb-6 line-clamp-2 font-sans leading-relaxed">
             {currentBanner.subtitle || 'Experience flagship craftsmanship, uncompromised performance, and member-exclusive savings.'}
           </p>
 
-          {/* Direct CTA Action Button in #FF9E00 */}
+          {/* Direct CTA Action Button in Terracotta */}
           <div className="flex items-center gap-3">
             <button
               onClick={handleBannerClick}
-              className="btn-theme-primary px-6 py-3 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 tracking-wide cursor-pointer"
+              className="btn-cta px-6 py-3 rounded-[6px] text-xs sm:text-sm font-bold flex items-center gap-2 tracking-wider uppercase cursor-pointer bg-[#C2603F] hover:bg-[#A44E31] text-white shadow-sm"
             >
               <span>{currentBanner.ctaText || 'Claim Offer'}</span>
               <ArrowRight className="w-4 h-4" />
@@ -124,14 +124,14 @@ export default function AutoBannerCarousel({ onSelectCategory, onSelectProductSl
         {/* Carousel Left / Right Arrows */}
         <button
           onClick={prevSlide}
-          className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-[#160D0D]/80 hover:bg-[#FF9E00] hover:text-[#0D0606] text-[#F8F6F6] border border-[#F8F6F6]/10 flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 shadow-xl cursor-pointer"
+          className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-[6px] bg-[#142922]/85 hover:bg-[#C2603F] text-[#FAF6EF] border border-[#B8935A]/35 flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 shadow-md cursor-pointer"
         >
           <ChevronLeft className="w-5 h-5" />
         </button>
 
         <button
           onClick={nextSlide}
-          className="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-[#160D0D]/80 hover:bg-[#FF9E00] hover:text-[#0D0606] text-[#F8F6F6] border border-[#F8F6F6]/10 flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 shadow-xl cursor-pointer"
+          className="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-[6px] bg-[#142922]/85 hover:bg-[#C2603F] text-[#FAF6EF] border border-[#B8935A]/35 flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 shadow-md cursor-pointer"
         >
           <ChevronRight className="w-5 h-5" />
         </button>
@@ -143,7 +143,7 @@ export default function AutoBannerCarousel({ onSelectCategory, onSelectProductSl
               key={idx}
               onClick={() => setCurrentIndex(idx)}
               className={`h-1.5 rounded-full transition-all duration-300 ${
-                idx === currentIndex ? 'w-8 bg-[#FF9E00]' : 'w-2 bg-[#F8F6F6]/30 hover:bg-[#F8F6F6]/60'
+                idx === currentIndex ? 'w-8 bg-[#C2603F]' : 'w-2 bg-[#FAF6EF]/40 hover:bg-[#FAF6EF]/70'
               }`}
               title={`Slide ${idx + 1}`}
             />

@@ -49,11 +49,11 @@ export default function ProductCard({ product, onOpenDetail }) {
   return (
     <div
       onClick={() => onOpenDetail && onOpenDetail(product)}
-      className="card-3d p-4 flex flex-col justify-between h-[450px] min-h-[450px] cursor-pointer group select-none font-poppins relative rounded-2xl bg-[#160D0D] border border-[#F8F6F6]/10 hover:border-[#FF9E00]/40 transition-all duration-300"
+      className="card-3d p-4 flex flex-col justify-between h-[450px] min-h-[450px] cursor-pointer group select-none font-sans relative rounded-[6px] bg-[#FFFFFF] border border-[#E7DFD2] hover:border-[#B8935A] transition-all duration-300 shadow-classic"
     >
       <div>
-        {/* Uniform Framing Container: Strictly 224px (h-56) with Centered Containment */}
-        <div className="relative w-full h-56 rounded-2xl overflow-hidden bg-gradient-to-b from-[#180E0E] to-[#0D0606] mb-3 border border-[#F8F6F6]/10 flex items-center justify-center p-3 group-hover:border-[#FF9E00]/30 transition-colors">
+        {/* Uniform Framing Container: Strictly 224px (h-56) with Centered Containment on Cream Background */}
+        <div className="relative w-full h-56 rounded-[4px] overflow-hidden bg-[#FAF6EF] mb-3 border border-[#E7DFD2]/70 flex items-center justify-center p-3 group-hover:border-[#B8935A]/50 transition-colors">
           <img
             src={primaryImage}
             alt={product.name}
@@ -62,7 +62,7 @@ export default function ProductCard({ product, onOpenDetail }) {
             loading="lazy"
           />
 
-          {/* Top Left Discount Badge */}
+          {/* Top Left Discount Badge in Brick Red */}
           {product.discountPercent > 0 && (
             <div className="absolute top-2.5 left-2.5 badge-discount z-10">
               -{product.discountPercent}% OFF
@@ -72,7 +72,7 @@ export default function ProductCard({ product, onOpenDetail }) {
           {/* Top Right Wishlist Heart Toggle */}
           <button
             onClick={handleHeartClick}
-            className={`absolute top-2.5 right-2.5 z-10 w-8 h-8 rounded-full flex items-center justify-center transition-all bg-[#0D0606]/80 backdrop-blur-md border border-[#F8F6F6]/15 hover:scale-110 active:scale-95 ${
+            className={`absolute top-2.5 right-2.5 z-10 w-8 h-8 rounded-full flex items-center justify-center transition-all bg-white/90 backdrop-blur-md border border-[#E7DFD2] shadow-sm hover:scale-110 active:scale-95 cursor-pointer ${
               isHeartPopping ? 'scale-125' : ''
             }`}
             title={isWishlisted ? 'Remove from Wishlist' : 'Add to Wishlist'}
@@ -80,69 +80,69 @@ export default function ProductCard({ product, onOpenDetail }) {
             <Heart
               className={`w-4 h-4 transition-colors ${
                 isWishlisted
-                  ? 'fill-[#FF9E00] text-[#FF9E00]'
-                  : 'text-[#F8F6F6] hover:text-[#FF9E00]'
+                  ? 'fill-[#C2603F] text-[#C2603F]'
+                  : 'text-[#6B665E] hover:text-[#C2603F]'
               }`}
             />
           </button>
         </div>
 
         {/* Brand & Category Label: Fixed Height (h-5) */}
-        <div className="flex items-center justify-between text-[11px] text-[#786E6E] mb-1 font-semibold uppercase tracking-wider h-5">
+        <div className="flex items-center justify-between text-[11px] text-[#6B665E] mb-1 font-semibold uppercase tracking-wider h-5">
           <span className="truncate max-w-[140px]">{product.brand || 'Exclusive'}</span>
-          <div className="flex items-center gap-1 text-[#FF9E00] shrink-0">
-            <Star className="w-3 h-3 fill-[#FF9E00]" />
-            <span className="font-mono font-bold text-[#F8F6F6]">{product.ratingAverage || '4.5'}</span>
+          <div className="flex items-center gap-1 text-[#B8935A] shrink-0">
+            <Star className="w-3 h-3 fill-[#B8935A]" />
+            <span className="font-sans font-bold text-[#1F2421] tabular-nums">{product.ratingAverage || '4.5'}</span>
           </div>
         </div>
 
-        {/* Title: Fixed Height (h-10) with 2-line clamp */}
+        {/* Title: Fixed Height (h-10) with 2-line clamp in modern sans */}
         <h4 
-          className="font-poppins font-semibold text-sm text-[#F8F6F6] group-hover:text-[#FF9E00] transition-colors line-clamp-2 leading-snug mb-1 h-10 overflow-hidden"
+          className="font-sans font-semibold text-sm text-[#1F2421] group-hover:text-[#1E3A34] transition-colors line-clamp-2 leading-snug mb-1 h-10 overflow-hidden"
           title={product.name}
         >
           {product.name}
         </h4>
 
         {/* Short Highlight info: Fixed Height (h-4) */}
-        <p className="text-[11px] text-[#B8B0B0] line-clamp-1 mb-2 h-4 overflow-hidden">
+        <p className="text-[11px] text-[#6B665E] line-clamp-1 mb-2 h-4 overflow-hidden font-sans">
           {product.shortInfo || product.description || 'Verified authentic luxury quality'}
         </p>
       </div>
 
       {/* Bottom Pricing & Inline Cart Quantity Stepper: Fixed Height (h-14) pinned to bottom */}
-      <div className="mt-auto pt-3 border-t border-[#F8F6F6]/10 flex items-center justify-between gap-2 h-14">
+      <div className="mt-auto pt-3 border-t border-[#E7DFD2] flex items-center justify-between gap-2 h-14">
         <div className="min-w-0">
           <div className="flex items-baseline gap-1.5 flex-wrap">
-            <span className="font-poppins font-bold text-base text-[#F8F6F6] truncate">
+            <span className="font-sans font-bold text-base text-[#1F2421] truncate tabular-nums">
               ₹{product.discountedPrice?.toLocaleString()}
             </span>
             {product.originalPrice > product.discountedPrice && (
-              <span className="text-[11px] text-[#786E6E] line-through font-mono">
+              <span className="text-[11px] text-[#6B665E] line-through font-sans tabular-nums">
                 ₹{product.originalPrice?.toLocaleString()}
               </span>
             )}
           </div>
-          <span className="text-[9px] text-[#B8B0B0] block">In Stock & Verified</span>
+          <span className="text-[9px] text-[#4F7A5A] font-semibold block">In Stock & Verified</span>
         </div>
 
         {/* Inline Stepper: [-] [qty] [+] or [Add to Cart] button */}
         <div onClick={(e) => e.stopPropagation()} className="shrink-0">
           {quantityInCart > 0 ? (
-            <div className="flex items-center bg-[#0D0606] border border-[#FF9E00]/60 rounded-xl p-0.5 shadow-md">
+            <div className="flex items-center bg-[#FAF6EF] border border-[#C2603F]/40 rounded-[6px] p-0.5 shadow-sm">
               <button
                 onClick={handleDecrement}
-                className="w-7 h-7 rounded-lg bg-[#160D0D] hover:bg-[#FF9E00] hover:text-[#0D0606] text-[#F8F6F6] flex items-center justify-center transition-colors font-bold cursor-pointer"
+                className="w-7 h-7 rounded-[4px] bg-[#FFFFFF] hover:bg-[#C2603F] hover:text-white text-[#1F2421] flex items-center justify-center transition-colors font-bold cursor-pointer"
                 title="Decrease quantity"
               >
                 <Minus className="w-3 h-3" />
               </button>
-              <span className="w-7 text-center font-bold text-xs text-[#FF9E00] font-mono select-none">
+              <span className="w-7 text-center font-bold text-xs text-[#C2603F] font-sans tabular-nums select-none">
                 {quantityInCart}
               </span>
               <button
                 onClick={handleIncrement}
-                className="w-7 h-7 rounded-lg bg-[#FF9E00] hover:bg-[#FFAE26] text-[#0D0606] flex items-center justify-center transition-colors font-bold cursor-pointer"
+                className="w-7 h-7 rounded-[4px] bg-[#C2603F] hover:bg-[#A44E31] text-white flex items-center justify-center transition-colors font-bold cursor-pointer"
                 title="Increase quantity"
               >
                 <Plus className="w-3 h-3 stroke-[2.5]" />
@@ -151,7 +151,7 @@ export default function ProductCard({ product, onOpenDetail }) {
           ) : (
             <button
               onClick={handleAddClick}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#FF9E00] hover:bg-[#FFAE26] text-[#0D0606] text-xs font-bold transition-all shadow-md shadow-[#FF9E00]/25 cursor-pointer active:scale-95"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-[6px] bg-[#C2603F] hover:bg-[#A44E31] text-white text-xs font-bold uppercase tracking-wider transition-all shadow-sm cursor-pointer active:scale-95"
             >
               <ShoppingBag className="w-3.5 h-3.5 stroke-[2.5]" />
               <span>Add</span>

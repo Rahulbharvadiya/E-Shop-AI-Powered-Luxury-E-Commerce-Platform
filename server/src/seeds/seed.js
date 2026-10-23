@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 import dotenv from 'dotenv';
 import { User } from '../models/User.js';
 import { Category } from '../models/Category.js';
@@ -13,9 +14,18 @@ dotenv.config();
 const uri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/eshop';
 
 async function seedDatabase() {
+  // Production Safety Guard (P1-12)
+  if (process.env.NODE_ENV === 'production' && !process.argv.includes('--force')) {
+    console.error('\n🚨 [SAFETY GUARD] Refusing to run destructive seed in production!');
+    console.error('If you genuinely intend to reset the production database, pass the explicit --force flag:');
+    console.error('   node src/seeds/seed.js --force\n');
+    process.exit(1);
+  }
+
   try {
+    const sanitizedUri = uri.replace(/\/\/(.*?)@/, '//***:***@');
     await mongoose.connect(uri);
-    console.log('🌱 Connected to MongoDB for seeding...');
+    console.log(`🌱 Connected to MongoDB for seeding: ${sanitizedUri}`);
 
     // Clear existing collections
     await User.deleteMany({});
@@ -27,16 +37,20 @@ async function seedDatabase() {
 
     console.log('🧹 Purged existing collections.');
 
-    // 1. Create Admin User & Demo Customer
+    // 1. Create Admin User & Demo Customer from environment or secure generator (P0-2)
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@eshop.com';
+    const adminPassword = process.env.ADMIN_PASSWORD || 'Admin@' + crypto.randomInt(10000, 99999);
+    const customerPassword = process.env.CUSTOMER_PASSWORD || 'Customer@' + crypto.randomInt(10000, 99999);
+
     const adminSalt = await bcrypt.genSalt(10);
-    const adminPasswordHash = await bcrypt.hash('AdminPassword@123', adminSalt);
-    const customerPasswordHash = await bcrypt.hash('Customer@123', adminSalt);
+    const adminPasswordHash = await bcrypt.hash(adminPassword, adminSalt);
+    const customerPasswordHash = await bcrypt.hash(customerPassword, adminSalt);
 
     const admin = await User.create({
       name: 'Super Admin',
-      username: 'admin',
-      email: 'admin@eshop.com',
-      phone: '9876543210',
+      username: process.env.ADMIN_USERNAME || 'admin',
+      email: adminEmail,
+      phone: process.env.ADMIN_PHONE || '9876543210',
       passwordHash: adminPasswordHash,
       role: 'admin',
       avatar: 'avatar-cyberpunk',
@@ -745,8 +759,8 @@ async function seedDatabase() {
 
     console.log('\n======================================================');
     console.log('🎉 E-SHOP DATABASE SEEDING COMPLETED SUCCESSFULLY!');
-    console.log('👑 Admin Login:    admin@eshop.com / AdminPassword@123');
-    console.log('🛍️ Customer Login: customer@eshop.com / Customer@123');
+    console.log(`👑 Admin Login:    ${adminEmail} / ${adminPassword}`);
+    console.log(`🛍️ Customer Login: customer@eshop.com / ${customerPassword}`);
     console.log('======================================================\n');
 
     process.exit(0);

@@ -1,0 +1,39 @@
+name: E-Shop CI Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-and-audit:
+    name: Build, Test & Security Audit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Monorepo Dependencies
+        run: npm run install:all
+
+      - name: Client Production Build Verification
+        run: cd client && npm run build
+
+      - name: Run Server Automated Tests
+        run: cd server && npm test
+        env:
+          NODE_ENV: test
+          MONGODB_URI: ${{ secrets.MONGODB_URI || 'mongodb://localhost:27017/eshop_test' }}
+          JWT_ACCESS_SECRET: github_ci_secure_test_access_secret_12345
+          JWT_REFRESH_SECRET: github_ci_secure_test_refresh_secret_12345
+
+      - name: Run NPM Security Audit
+        run: npm audit --audit-level=critical

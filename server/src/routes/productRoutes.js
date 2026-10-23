@@ -21,5 +21,6 @@ router.get('/products/recommendations', optionalAuth, getRecommendationsGrid);
 router.get('/products/search', searchProductsAI);
 router.get('/products/:slug', getProductBySlug);
 router.post('/pincode/estimate', checkDelivery);
+router.post('/delivery/estimate', checkDelivery);
 
 export default router;

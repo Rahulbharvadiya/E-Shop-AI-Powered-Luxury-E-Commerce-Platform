@@ -1,12 +1,17 @@
 import mongoose from 'mongoose';
+import { env } from './env.js';
 
 export const connectDB = async () => {
   try {
-    const uri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/eshop';
+    const uri = env.MONGODB_URI;
     await mongoose.connect(uri);
-    console.log(`✅ MongoDB Connected successfully to: ${uri}`);
+
+    // Sanitize URI for safe logging (redact credentials)
+    const sanitizedUri = uri.replace(/\/\/(.*?)@/, '//***:***@');
+    console.log(`✅ MongoDB Connected successfully to: ${sanitizedUri}`);
   } catch (error) {
     console.error(`❌ MongoDB Connection Error: ${error.message}`);
     process.exit(1);
   }
 };
+

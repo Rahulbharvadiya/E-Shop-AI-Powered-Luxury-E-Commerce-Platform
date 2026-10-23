@@ -24,6 +24,7 @@ const userSchema = new mongoose.Schema({
   emailVerified: { type: Boolean, default: false },
   phoneVerified: { type: Boolean, default: false },
   status: { type: String, enum: ['active', 'deleted'], default: 'active' },
+  tokenVersion: { type: Number, default: 0 },
   lastLoginAt: { type: Date }
 }, { timestamps: true });
 

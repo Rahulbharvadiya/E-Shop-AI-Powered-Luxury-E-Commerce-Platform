@@ -3,13 +3,19 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
-import dotenv from 'dotenv';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
+import mongoSanitize from 'express-mongo-sanitize';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { Server as SocketIOServer } from 'socket.io';
+import jwt from 'jsonwebtoken';
+import mongoose from 'mongoose';
 
+import { env } from './config/env.js';
 import { connectDB } from './config/db.js';
+import { errorHandler } from './middleware/errorHandler.js';
 import authRoutes from './routes/authRoutes.js';
 import productRoutes from './routes/productRoutes.js';
 import cartRoutes from './routes/cartRoutes.js';
@@ -19,18 +25,16 @@ import reviewRoutes from './routes/reviewRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
 import aiRoutes from './routes/aiRoutes.js';
 
-dotenv.config();
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
 const server = http.createServer(app);
 
-// Initialize Socket.IO
+// Initialize Socket.IO with CORS and Handshake Authentication (P1-11)
 const io = new SocketIOServer(server, {
   cors: {
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin: env.CLIENT_URL,
     methods: ['GET', 'POST'],
     credentials: true
   }
@@ -38,26 +42,94 @@ const io = new SocketIOServer(server, {
 
 app.set('io', io);
 
-io.on('connection', (socket) => {
-  console.log(`🔌 [Socket.IO] Client connected: ${socket.id}`);
-  socket.on('disconnect', () => {
-    console.log(`🔌 [Socket.IO] Client disconnected: ${socket.id}`);
-  });
+// Socket.IO Handshake Authentication Middleware
+io.use((socket, next) => {
+  try {
+    const token = socket.handshake.auth?.token || socket.handshake.headers?.authorization?.split(' ')[1];
+    if (token) {
+      const decoded = jwt.verify(token, env.JWT_ACCESS_SECRET);
+      socket.user = decoded;
+    }
+  } catch (err) {
+    // Unauthenticated guest sockets are permitted for public deal notifications
+  }
+  next();
 });
 
-// Middleware
+io.on('connection', (socket) => {
+  if (socket.user) {
+    // Join private room scoped strictly to this authenticated user (P1-11)
+    socket.join(`user_${socket.user.id}`);
+  }
+
+  socket.on('disconnect', () => {});
+});
+
+// Security Headers (P0-8)
+app.use(helmet({
+  contentSecurityPolicy: false, // Permit modern SPA inline styles and external media assets
+  crossOriginEmbedderPolicy: false
+}));
+
+// CORS Configuration
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: env.CLIENT_URL,
   credentials: true
 }));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
-app.use(morgan('dev'));
 
-// Health Check
+// Body Parsing with Request Size Limits (P0-8)
+app.use(express.json({ limit: '1mb' }));
+app.use(express.urlencoded({ extended: true, limit: '1mb' }));
+app.use(cookieParser());
+
+// NoSQL Operator Injection Sanitization (P1-9)
+app.use(mongoSanitize());
+
+if (env.NODE_ENV !== 'test') {
+  app.use(morgan(env.NODE_ENV === 'production' ? 'combined' : 'dev'));
+}
+
+// Abuse Protection & Rate Limiting (P0-8)
+const globalApiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 1000,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, message: 'Too many requests from this client. Please retry after 15 minutes.' }
+});
+app.use('/api', globalApiLimiter);
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 30, // 30 attempts per 15 min
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, message: 'Too many authentication attempts. Please try again later.' }
+});
+app.use('/api/auth/login', authLimiter);
+app.use('/api/auth/register', authLimiter);
+app.use('/api/auth/forgot-password', authLimiter);
+
+const aiChatLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000,
+  max: 40,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, message: 'AI Concierge rate limit reached. Please wait a moment.' }
+});
+app.use('/api/ai/chat', aiChatLimiter);
+
+// Robust Operational Health Check checking MongoDB Connection (P2-9)
 app.get('/api/health', (req, res) => {
-  res.status(200).json({ status: 'ok', uptime: process.uptime(), timestamp: new Date() });
+  const isDbConnected = mongoose.connection.readyState === 1;
+  const statusCode = isDbConnected ? 200 : 503;
+
+  res.status(statusCode).json({
+    status: isDbConnected ? 'healthy' : 'degraded',
+    database: isDbConnected ? 'connected' : 'disconnected',
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString()
+  });
 });
 
 // API Routes
@@ -76,7 +148,6 @@ const clientDistPath = fs.existsSync(path.resolve('client/dist'))
   : path.resolve(__dirname, '../../../client/dist');
 
 if (fs.existsSync(clientDistPath)) {
-  console.log(`📦 [Production Assets] Serving client from ${clientDistPath}`);
   app.use(express.static(clientDistPath));
   app.get('*', (req, res, next) => {
     if (req.path.startsWith('/api')) return next();
@@ -84,21 +155,49 @@ if (fs.existsSync(clientDistPath)) {
   });
 }
 
-// Global Error Handler
-app.use((err, req, res, next) => {
-  console.error(`💥 [API Error]:`, err);
-  res.status(err.status || 500).json({
-    success: false,
-    message: err.message || 'Internal Server Error'
-  });
-});
-
-const PORT = process.env.PORT || 5000;
+// Central Error Handler Middleware (P1-8)
+app.use(errorHandler);
 
 // Connect DB & Start Server
-connectDB().then(() => {
-  server.listen(PORT, () => {
-    console.log(`🚀 [E-Shop Server] Running on http://localhost:${PORT}`);
-    console.log(`📡 [Socket.IO] WebSocket channels active`);
+const PORT = env.PORT;
+
+if (process.env.NODE_ENV !== 'test') {
+  connectDB().then(() => {
+    server.listen(PORT, () => {
+      console.log(`🚀 [E-Shop Server] Running on http://localhost:${PORT} in ${env.NODE_ENV} mode`);
+      console.log(`📡 [Socket.IO] Authenticated WebSocket server active`);
+    });
   });
-});
+}
+
+// Graceful Process Termination (P2-9)
+const handleGracefulShutdown = async (signal) => {
+  console.log(`\n🛑 [Server] Received ${signal}. Initiating graceful shutdown...`);
+
+  server.close(async () => {
+    console.log('🚪 [HTTP Server] Stopped accepting new connections.');
+
+    io.close(() => {
+      console.log('🔌 [Socket.IO] Disconnected active sockets.');
+    });
+
+    try {
+      await mongoose.connection.close(false);
+      console.log('🗄️ [MongoDB] Connection closed safely.');
+      process.exit(0);
+    } catch (err) {
+      console.error('❌ Error closing MongoDB connection:', err);
+      process.exit(1);
+    }
+  });
+
+  setTimeout(() => {
+    console.error('⚠️ [Server] Forceful shutdown triggered after timeout.');
+    process.exit(1);
+  }, 10000);
+};
+
+process.on('SIGTERM', () => handleGracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => handleGracefulShutdown('SIGINT'));
+
+export { app, server };
