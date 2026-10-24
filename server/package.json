@@ -8,6 +8,7 @@
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "seed": "node src/seeds/seed.js",
+    "update-admin": "node src/scripts/updateAdminPassword.js",
     "test": "node --test tests/**/*.test.js"
   },
   "keywords": [
