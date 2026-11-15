@@ -6,9 +6,9 @@ export const connectDB = async () => {
     const uri = env.MONGODB_URI;
     await mongoose.connect(uri);
 
-    // Sanitize URI for safe logging (redact credentials)
-    const sanitizedUri = uri.replace(/\/\/(.*?)@/, '//***:***@');
-    console.log(`✅ MongoDB Connected successfully to: ${sanitizedUri}`);
+    // Safe host logging without leaking URI parameters or credentials (P1-10)
+    const host = mongoose.connection.host || 'MongoDB Atlas Cluster';
+    console.log(`✅ MongoDB Connected successfully to host: ${host}`);
   } catch (error) {
     console.error(`❌ MongoDB Connection Error: ${error.message}`);
     process.exit(1);

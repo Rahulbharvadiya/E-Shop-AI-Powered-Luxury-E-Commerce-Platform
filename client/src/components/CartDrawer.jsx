@@ -549,26 +549,39 @@ export default function CartDrawer({ onOpenAccount }) {
             {/* 4. PAYMENT METHOD */}
             {items.length > 0 && (
               <div className="p-4 rounded-[6px] bg-[#FAF6EF] border border-[#E7DFD2] font-sans">
-                <span className="text-xs font-bold text-[#1E3A34] flex items-center gap-1.5 mb-2 font-serif">
-                  <CreditCard className="w-4 h-4 text-[#B8935A]" />
-                  <span>4. Payment Method</span>
-                </span>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-bold text-[#1E3A34] flex items-center gap-1.5 font-serif">
+                    <CreditCard className="w-4 h-4 text-[#B8935A]" />
+                    <span>4. Payment Method</span>
+                  </span>
+                  <span className="text-[10px] font-medium text-[#B8935A] bg-[#B8935A]/10 px-2 py-0.5 rounded">
+                    Demo Mode
+                  </span>
+                </div>
                 <div className="grid grid-cols-2 gap-2 text-xs font-sans">
-                  {['UPI', 'CARD', 'NETBANKING', 'COD'].map((method) => (
+                  {[
+                    { id: 'UPI', label: 'UPI (Demo)' },
+                    { id: 'CARD', label: 'Card (Demo)' },
+                    { id: 'NETBANKING', label: 'NetBanking (Demo)' },
+                    { id: 'COD', label: 'COD (Pay on Delivery)' }
+                  ].map((method) => (
                     <button
-                      key={method}
+                      key={method.id}
                       type="button"
-                      onClick={() => setPaymentMethod(method)}
+                      onClick={() => setPaymentMethod(method.id)}
                       className={`py-2 px-3 rounded-[6px] border text-center font-bold transition-all cursor-pointer ${
-                        paymentMethod === method
+                        paymentMethod === method.id
                           ? 'bg-[#1E3A34] text-white border-[#1E3A34] shadow-sm'
                           : 'bg-[#FFFFFF] border-[#E7DFD2] text-[#6B665E] hover:text-[#1F2421]'
                       }`}
                     >
-                      {method}
+                      {method.label}
                     </button>
                   ))}
                 </div>
+                <p className="text-[11px] text-[#6B665E] mt-2 leading-relaxed">
+                  💡 Online options simulate instant order confirmation without real gateway charges. Select <strong>COD</strong> for physical delivery payment.
+                </p>
               </div>
             )}
 

@@ -7,6 +7,7 @@ import { Coupon } from '../models/Coupon.js';
 import { estimateDeliveryAsync } from '../services/pincodeService.js';
 import { generateInvoicePDF } from '../services/invoiceService.js';
 import { generateOrderNumber, generateInvoiceNumber } from '../models/Counter.js';
+import { calculateItemTotal, calculateCouponDiscount, calculateOrderTotal } from '../services/pricingService.js';
 import { env } from '../config/env.js';
 
 // 1. Validate Promo Code
@@ -228,17 +229,18 @@ export async function checkout(req, res) {
 
     shippingAddress.state = shippingAddress.state || delivery.state || 'Karnataka';
 
-    // Payment Gateway Order Reference (P0-1)
+    // Payment Processing Mode (P0-1: Explicit Demo Simulation / COD - no external gateway required)
     const isCod = paymentMethod === 'COD';
-    const gatewayOrderId = isCod ? null : `rzp_order_${crypto.randomBytes(8).toString('hex')}`;
-    const paymentId = isCod ? null : `pay_${crypto.randomBytes(8).toString('hex')}`;
+    const isSimulated = !isCod;
+    const gatewayOrderId = isSimulated ? `demo_order_${crypto.randomBytes(8).toString('hex')}` : null;
+    const paymentId = isSimulated ? `demo_pay_${crypto.randomBytes(8).toString('hex')}` : null;
 
-    // Cryptographic signature simulation for verified payment
-    const paymentSignature = isCod
-      ? null
-      : crypto.createHmac('sha256', env.JWT_ACCESS_SECRET)
+    // Cryptographic signature for audit and receipt integrity in demo simulation mode
+    const paymentSignature = isSimulated
+      ? crypto.createHmac('sha256', env.JWT_ACCESS_SECRET)
           .update(`${gatewayOrderId}|${paymentId}`)
-          .digest('hex');
+          .digest('hex')
+      : null;
 
     const order = await Order.create({
       orderNo,
@@ -265,8 +267,8 @@ export async function checkout(req, res) {
           status: 'ORDER_PLACED',
           timestamp: new Date(),
           note: isCod
-            ? 'Order placed with Cash on Delivery (Payment pending on arrival).'
-            : `Order placed online via ${paymentMethod} (Transaction ID: ${paymentId}).`
+            ? 'Order placed with Cash on Delivery (Payment pending upon arrival).'
+            : `Order placed via Demo Simulation (${paymentMethod} - Demo environment, no external gateway charges). Reference: ${paymentId}.`
         }
       ],
       estimatedDeliveryDate: new Date(Date.now() + delivery.estimatedDays * 24 * 60 * 60 * 1000)
@@ -465,11 +467,11 @@ export async function cancelOrder(req, res) {
   }
 }
 
-// 7. Verify Online Payment Endpoint (P0-1)
+// 7. Verify / Settle Demo Payment Endpoint (P0-1: Simulation Mode)
 export async function verifyPayment(req, res) {
   try {
     const { id } = req.params;
-    const { razorpay_payment_id, razorpay_order_id, razorpay_signature } = req.body;
+    const { paymentId, transactionRef } = req.body;
 
     if (!mongoose.isValidObjectId(id)) {
       return res.status(404).json({ success: false, message: 'Order not found.' });
@@ -484,31 +486,20 @@ export async function verifyPayment(req, res) {
       return res.status(200).json({ success: true, message: 'Order is already marked as paid.', data: order });
     }
 
-    // Signature verification
-    const expectedSignature = crypto.createHmac('sha256', env.JWT_ACCESS_SECRET)
-      .update(`${razorpay_order_id || order.paymentGatewayOrderId}|${razorpay_payment_id || order.paymentGatewayPaymentId}`)
-      .digest('hex');
-
-    const isValid = (razorpay_signature === expectedSignature) || (env.NODE_ENV === 'development');
-
-    if (!isValid) {
-      return res.status(400).json({ success: false, message: 'Invalid payment signature. Verification failed.' });
-    }
-
+    const ref = paymentId || transactionRef || order.paymentGatewayPaymentId || `demo_pay_${crypto.randomBytes(8).toString('hex')}`;
     order.paymentStatus = 'PAID';
-    order.paymentGatewayPaymentId = razorpay_payment_id || order.paymentGatewayPaymentId;
-    order.paymentGatewaySignature = razorpay_signature || expectedSignature;
+    order.paymentGatewayPaymentId = ref;
     order.timeline.push({
       status: order.orderStatus,
       timestamp: new Date(),
-      note: `Online payment verified. Reference ID: ${order.paymentGatewayPaymentId}.`
+      note: `Online payment settled via Demo Simulation. Reference ID: ${ref}.`
     });
 
     await order.save();
 
     return res.status(200).json({
       success: true,
-      message: 'Payment verified successfully!',
+      message: 'Demo payment simulated and order confirmed successfully!',
       data: order
     });
   } catch (error) {

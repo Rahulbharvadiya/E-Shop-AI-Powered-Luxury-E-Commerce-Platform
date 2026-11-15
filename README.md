@@ -11,7 +11,7 @@
   <strong>A high-performance full-stack luxury e-commerce ecosystem featuring an interactive AI Shopping Concierge, real-time WebSocket deal broadcasts, dynamic percentage coupon intelligence, and automated PDF invoicing.</strong>
 </p>
 
-[**Explore Live Deployment 🌐**](https://eshop-9kqz.onrender.com/) • [**Key Features ✨**](#-key-features) • [**Tech Stack 🛠️**](#-tech-stack--tools) • [**Quickstart 🚀**](#-quickstart-guide) • [**Admin Console 👑**](#-test-credentials)
+[**Explore Live Deployment 🌐**](https://eshop-9kqz.onrender.com/) • [**Key Features ✨**](#-key-features) • [**Tech Stack 🛠️**](#-tech-stack--tools) • [**Quickstart 🚀**](#-quickstart-guide) • [**Platform Access 🔑**](#-accessing-the-platform)
 
 </div>
 
@@ -133,16 +133,14 @@ The platform has been engineered and audited to senior engineering standards wit
 
 ## 🔑 Accessing the Platform
 
-### Demo Test Accounts
+### Account Creation & Role-Based Access Control
+- **Customer Account**: Click **"Register"** in the top navigation bar to create a personalized account with your name, username, phone, email, and password.
+- **Store Administrator**: Set your administrative credentials securely via server environment variables (`ADMIN_EMAIL` and `ADMIN_PASSWORD`) before executing `npm run seed`, or run `npm run update-admin` in `server/` to configure admin credentials on an existing database without publishing credentials.
 
-| Role | Login Identifier | Password | Access Privileges |
-| :--- | :--- | :--- | :--- |
-| **Store Admin** | `admin` | `Password` | Full Admin Operations Console, Product CRUD, Live Deal Dispatcher, Store Settings |
-| **Customer** | `customer` | `Customerpassword` | Retail Shopping, AI Concierge, Cart & Checkout, Order Tracking, PDF Invoices |
-
-### Creating an Account
-- Click **"Register"** in the top navigation bar to create your own customer account with full name, username, phone, email, and password.
-- Administrators can set initial administrative credentials securely via server environment variables (`ADMIN_EMAIL` and `ADMIN_PASSWORD`) before executing `npm run seed`.
+### Payment & Order Fulfillment Mode (Demo Notice)
+- In compliance with evaluation and portfolio requirements, external third-party payment gateways (e.g. Razorpay / Stripe) are deliberately omitted.
+- **Cash on Delivery (COD)** represents the authentic production-ready fulfillment flow.
+- Online methods (UPI, Card, NetBanking) execute in **Demo Simulation Mode**, generating verifiable cryptographic demo receipts without charging real payment accounts.
 
 ---
 
@@ -163,22 +161,9 @@ npm run install:all
 ```
 
 ### 3. Configure Environment Variables
-<<<<<<< HEAD
-Create a `.env` file in the `server/` directory:
-```env
-PORT=5000
-NODE_ENV=development
-CLIENT_URL=http://localhost:5173
-MONGODB_URI=mongodb+srv://<username>:<password>@eshop.buedvll.mongodb.net/eshop?retryWrites=true&w=majority
-JWT_ACCESS_SECRET=your_jwt_secret_key_here
-JWT_REFRESH_SECRET=your_refresh_secret_key_here
-ADMIN_EMAIL=admin
-ADMIN_PASSWORD=Password
-=======
 Copy the template in `server/.env.example` to `server/.env`:
 ```bash
 cp server/.env.example server/.env
->>>>>>> 70a0fc5 (feat: complete classic luxury redesign, security hardening, and automated test suite)
 ```
 Ensure `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`, and `MONGODB_URI` are configured with your secrets.
 

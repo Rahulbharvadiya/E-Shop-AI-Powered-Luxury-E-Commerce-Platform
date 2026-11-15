@@ -28,7 +28,7 @@ export function generateInvoicePDF(order, res) {
   doc
     .fontSize(10)
     .font('Helvetica')
-    .text('RETAIL TAX INVOICE & ORDER SUMMARY', 320, 25, { align: 'right' })
+    .text('PROFORMA INVOICE & ORDER SUMMARY (DEMO)', 300, 25, { align: 'right' })
     .text(`Invoice No: ${order.invoiceNo || 'ESH-2026-0001'}`, 320, 40, { align: 'right' })
     .text(`Order No: ${order.orderNo || 'ORD-2026'}`, 320, 53, { align: 'right' });
 
@@ -173,7 +173,7 @@ export function generateInvoicePDF(order, res) {
     .fontSize(8)
     .fillColor('#64748B')
     .text(
-      'Tax is included in all retail items unless specified. This is a computer generated invoice and requires no physical signature.',
+      'This document is a computer-generated demonstration order summary. All tax and company details are simulated for portfolio evaluation.',
       40,
       760,
       { align: 'center', width: 515 }
